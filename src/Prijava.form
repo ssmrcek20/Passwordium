@@ -52,17 +52,6 @@
           <text value="Lozinka:"/>
         </properties>
       </component>
-      <component id="535b9" class="javax.swing.JTextField" binding="txtLozinka">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="300" height="-1"/>
-            <maximum-size width="300" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <font size="18"/>
-        </properties>
-      </component>
       <component id="beb4a" class="javax.swing.JButton" binding="btnPrijava">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -76,11 +65,22 @@
       </component>
       <component id="798a6" class="javax.swing.JButton" binding="btnRegistracija">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font size="16"/>
           <text value="Niste registrirani? Registriraj se"/>
+        </properties>
+      </component>
+      <component id="c3042" class="javax.swing.JPasswordField" binding="txtLozinka">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="300" height="-1"/>
+            <maximum-size width="300" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="18"/>
         </properties>
       </component>
     </children>
