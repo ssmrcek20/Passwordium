@@ -13,7 +13,7 @@ public class Prijava extends JFrame {
 
     public Prijava(){
         setTitle("Passwordium");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(1080,720);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -37,7 +37,7 @@ public class Prijava extends JFrame {
         btnRegistracija.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                new Registracija();
             }
         });
 
