@@ -36,18 +36,20 @@ public class Registracija extends JFrame {
                     HasherLozinke hasherLozinke= new HasherLozinke();
                     String hashedLozinka = null;
                     try {
-                        hashedLozinka = hasherLozinke.hash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
+                        hashedLozinka = hasherLozinke.napraviHash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
+
+                        try {
+                            hasherLozinke.spremiLozinku(txtKorIme.getText(),hashedLozinka);
+                            JOptionPane.showMessageDialog(Registracija.this,"Uspješna registarcija!");
+                            Registracija.this.dispose();
+                        } catch (FileAlreadyExistsException ex){
+                            JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
+                        }
+
                     } catch (NoSuchAlgorithmException ex) {
                         JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
-                    }
-                    try {
-                        hasherLozinke.spremiKorImeILozinku(txtKorIme.getText(),hashedLozinka);
-                        JOptionPane.showMessageDialog(Registracija.this,"Uspješna registarcija!");
-                        Registracija.this.dispose();
-                    } catch (FileAlreadyExistsException ex){
-                        JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
                     }
                 }
             }
