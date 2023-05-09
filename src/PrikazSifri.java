@@ -7,6 +7,8 @@ public class PrikazSifri extends JFrame {
     private JButton btnDodajLozinku;
     private JButton btnUrediLozinku;
     private JButton btnUkloniLozinku;
+    private String korIme;
+    private String lozinka;
 
     public PrikazSifri(){
         setTitle("Passwordium");
@@ -27,5 +29,12 @@ public class PrikazSifri extends JFrame {
         btnUkloniLozinku.setBorderPainted(false);
         btnUkloniLozinku.setBackground(new Color(200,200,200));
         btnUkloniLozinku.setFocusPainted(false);
+
+        
+    }
+
+    public void podaci(String korIme, String lozinka) {
+        this.korIme = korIme;
+        this.lozinka = lozinka;
     }
 }

@@ -28,15 +28,19 @@ public class Prijava extends JFrame {
         btnPrijava.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String korIme = txtKorIme.getText();
+                String lozinka = new String(txtLozinka.getPassword());
                 HasherLozinke hasherLozinke = new HasherLozinke();
-                if(hasherLozinke.postojiHashDatoteka(txtKorIme.getText())) {
+                if(hasherLozinke.postojiHashDatoteka(korIme)) {
                     try {
-                        String lozinkaIzDatoteke = hasherLozinke.dohvatiHash(txtKorIme.getText());
+                        String lozinkaIzDatoteke = hasherLozinke.dohvatiHash(korIme);
                         try {
-                            String upisanaLozinka = hasherLozinke.napraviHash(txtKorIme.getText(), new String(txtLozinka.getPassword()));
+                            String upisanaLozinka = hasherLozinke.napraviHash(korIme, lozinka);
 
                             if (Objects.equals(lozinkaIzDatoteke, upisanaLozinka)) {
-                                JOptionPane.showMessageDialog(Prijava.this, "Uspješna prijava!");
+                                PrikazSifri prikazSifri= new PrikazSifri();
+                                prikazSifri.podaci(korIme, lozinka);
+                                Prijava.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!");
                             }
