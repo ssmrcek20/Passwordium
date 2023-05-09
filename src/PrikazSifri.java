@@ -26,7 +26,7 @@ public class PrikazSifri extends JFrame {
         btnDodajLozinku.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                new DodajLozinke();
             }
         });
 
