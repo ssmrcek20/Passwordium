@@ -39,17 +39,44 @@ public class DodajLozinke extends JFrame{
         btnDodaj.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                KripterPodataka kripterPodataka = new KripterPodataka();
-                Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
-                try {
-                    kripterPodataka.spremiPodatke(racun,korImeKorisnika,lozinkaKorisnika);
-                    JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
-                    DodajLozinke.this.dispose();
+                boolean ispravno = true;
 
-                } catch (FileAlreadyExistsException ex){
-                    JOptionPane.showMessageDialog(DodajLozinke.this,ex.getMessage());
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(DodajLozinke.this, "Došlo je do greške tijekom spremanja novog računa!");
+                if (txtNaziv.getText().equals("")) {
+                    txtNaziv.setBackground(Color.red);
+                    ispravno = false;
+                } else {
+                    txtNaziv.setBackground(Color.white);
+                }
+
+                if (txtKorIme.getText().equals("")) {
+                    txtKorIme.setBackground(Color.red);
+                    ispravno = false;
+                } else {
+                    txtKorIme.setBackground(Color.white);
+                }
+
+                if (txtLozinka.getPassword().length == 0) {
+                    txtLozinka.setBackground(Color.red);
+                    ispravno = false;
+                } else {
+                    txtLozinka.setBackground(Color.white);
+                }
+
+
+
+                if(ispravno) {
+                    KripterPodataka kripterPodataka = new KripterPodataka();
+                    Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
+                    try {
+                        kripterPodataka.spremiPodatke(racun,korImeKorisnika,lozinkaKorisnika);
+                        JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
+                        DodajLozinke.this.dispose();
+
+                    } catch (FileAlreadyExistsException ex){
+                        JOptionPane.showMessageDialog(DodajLozinke.this,ex.getMessage());
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(DodajLozinke.this, "Došlo je do greške tijekom spremanja novog računa!");
+                    }
                 }
             }
         });

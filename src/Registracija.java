@@ -26,12 +26,23 @@ public class Registracija extends JFrame {
         btnRegistracija.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(txtKorIme.getText().equals("")){
+                boolean ispravno = true;
+
+                if (txtKorIme.getText().equals("")) {
                     txtKorIme.setBackground(Color.red);
-                } else if (txtLozinka.getPassword().length == 0) {
-                    txtLozinka.setBackground(Color.red);
-                    txtKorIme.setBackground(Color.white);
+                    ispravno = false;
                 } else {
+                    txtKorIme.setBackground(Color.white);
+                }
+
+                if (txtLozinka.getPassword().length == 0) {
+                    txtLozinka.setBackground(Color.red);
+                    ispravno = false;
+                } else {
+                    txtLozinka.setBackground(Color.white);
+                }
+
+                if(ispravno){
                     txtLozinka.setBackground(Color.white);
                     HasherLozinke hasherLozinke= new HasherLozinke();
                     String hashedLozinka = null;
