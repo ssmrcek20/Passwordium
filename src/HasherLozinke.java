@@ -24,7 +24,7 @@ public class HasherLozinke {
            throw new FileAlreadyExistsException("To korisničko ime se već koristi!");
         } else {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(korIme + ".txt"))) {
-                writer.write(hashedLozinka);
+                writer.write(hashedLozinka+ "\n");
             }
         }
     }
