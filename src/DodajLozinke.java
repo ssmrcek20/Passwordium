@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -42,8 +43,13 @@ public class DodajLozinke extends JFrame{
                 Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
                 try {
                     kripterPodataka.spremiPodatke(racun,korImeKorisnika,lozinkaKorisnika);
+                    JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
+                    DodajLozinke.this.dispose();
+
+                } catch (FileAlreadyExistsException ex){
+                    JOptionPane.showMessageDialog(DodajLozinke.this,ex.getMessage());
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(DodajLozinke.this, "Došlo je do greške tijekom spremanja novog računa!");
                 }
             }
         });
