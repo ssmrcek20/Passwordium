@@ -23,13 +23,13 @@ public class DodajLozinke extends JFrame{
         setVisible(true);
         setContentPane(panDodaj);
 
-        btnDodaj.setBorderPainted(false);
-        btnDodaj.setBackground(new Color(200,200,200));
-        btnDodaj.setFocusPainted(false);
-
         btnGenerirajLozinku.setBorderPainted(false);
         btnGenerirajLozinku.setBackground(new Color(200,200,200));
         btnGenerirajLozinku.setFocusPainted(false);
+
+        btnDodaj.setBorderPainted(false);
+        btnDodaj.setBackground(new Color(200,200,200));
+        btnDodaj.setFocusPainted(false);
         btnDodaj.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
