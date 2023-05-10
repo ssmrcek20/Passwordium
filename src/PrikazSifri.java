@@ -34,6 +34,7 @@ public class PrikazSifri extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 DodajLozinke dodajLozinke = new DodajLozinke();
                 dodajLozinke.podaci(korIme, lozinka);
+                PrikazSifri.this.dispose();
             }
         });
 

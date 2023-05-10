@@ -1,14 +1,8 @@
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 public class DodajLozinke extends JFrame{
     private JPanel panDodaj;
@@ -70,6 +64,10 @@ public class DodajLozinke extends JFrame{
                     try {
                         kripterPodataka.spremiPodatke(racun,korImeKorisnika,lozinkaKorisnika);
                         JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
+
+                        PrikazSifri prikazSifri= new PrikazSifri();
+                        prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
+                        prikazSifri.prikazPodataka();
                         DodajLozinke.this.dispose();
 
                     } catch (FileAlreadyExistsException ex){
