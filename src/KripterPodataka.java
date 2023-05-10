@@ -18,8 +18,11 @@ public class KripterPodataka {
         String racun = reader.readLine();
         while (racun != null) {
             String[] dijelovi = racun.split(":");
+            Racun racunObjekt;
 
-            Racun racunObjekt = new Racun(dijelovi[0],dijelovi[1],dijelovi[2],dijelovi[3]);
+            if(dijelovi.length == 4) racunObjekt = new Racun(dijelovi[0],dijelovi[1],dijelovi[2],dijelovi[3]);
+            else racunObjekt = new Racun(dijelovi[0],dijelovi[1],dijelovi[2]);
+
             racunObjekt.Lozinka = dekripter(racunObjekt,lozinka,korIme);
             racuni.add(racunObjekt);
 

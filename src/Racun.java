@@ -10,4 +10,10 @@ public class Racun {
         Lozinka = lozinka;
         Link = link;
     }
+
+    public Racun(String naziv, String korIme, String lozinka){
+        Naziv = naziv;
+        KorIme = korIme;
+        Lozinka = lozinka;
+    }
 }
