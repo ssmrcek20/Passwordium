@@ -1,8 +1,12 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class PrikazSifri extends JFrame {
     private JPanel panSifre;
@@ -41,6 +45,18 @@ public class PrikazSifri extends JFrame {
         btnUkloniLozinku.setBackground(new Color(200,200,200));
         btnUkloniLozinku.setFocusPainted(false);
 
+        tabLozinke.setRowHeight(30);
+        tabLozinke.getTableHeader().setReorderingAllowed(false);
+        tabLozinke.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int red = tabLozinke.rowAtPoint(e.getPoint());
+                String lozinkaRacuna = (String) tabLozinke.getValueAt(red, 2);
+                StringSelection selection = new StringSelection(lozinkaRacuna);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, selection);
+            }
+        });
     }
 
     public void prikazPodataka() throws Exception {
@@ -55,6 +71,8 @@ public class PrikazSifri extends JFrame {
             model.addRow(red);
         }
         tabLozinke.setModel(model);
+        tabLozinke.getColumnModel().getColumn(2).setMinWidth(0);
+        tabLozinke.getColumnModel().getColumn(2).setMaxWidth(0);
     }
 
     public void podaci(String korIme, String lozinka) {
