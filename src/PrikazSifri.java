@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +10,7 @@ public class PrikazSifri extends JFrame {
     private JButton btnDodajLozinku;
     private JButton btnUrediLozinku;
     private JButton btnUkloniLozinku;
+    private JScrollPane scrollPan;
     private String korIme;
     private String lozinka;
 
@@ -39,17 +41,20 @@ public class PrikazSifri extends JFrame {
         btnUkloniLozinku.setBackground(new Color(200,200,200));
         btnUkloniLozinku.setFocusPainted(false);
 
-        prikazPodataka();
-
     }
 
-    private void prikazPodataka() {
+    public void prikazPodataka() throws Exception {
         KripterPodataka kripterPodataka = new KripterPodataka();
 
-        String[][] podaci = kripterPodataka.dohvatiPodatke(korIme,lozinka);
+        Racun[] racuni = kripterPodataka.dohvatiPodatke(korIme,lozinka);
         String[] stupci = {"Naziv", "Korisničko ime", "Lozinka", "Link"};
 
-        tabLozinke = new JTable(podaci,stupci);
+        DefaultTableModel model = new DefaultTableModel(stupci, 0);
+        for (Racun racun : racuni) {
+            Object[] red = {racun.Naziv,racun.KorIme,racun.Lozinka,racun.Link};
+            model.addRow(red);
+        }
+        tabLozinke.setModel(model);
     }
 
     public void podaci(String korIme, String lozinka) {

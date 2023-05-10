@@ -8,14 +8,6 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="40dc5" class="javax.swing.JTable" binding="tabLozinke">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
       <component id="bb757" class="javax.swing.JButton" binding="btnDodajLozinku">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -23,7 +15,7 @@
           </grid>
         </constraints>
         <properties>
-          <font size="18"/>
+          <font size="16"/>
           <text value="Dodaj"/>
         </properties>
       </component>
@@ -56,6 +48,21 @@
           </grid>
         </constraints>
       </vspacer>
+      <scrollpane id="8380e" binding="scrollPan">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="40dc5" class="javax.swing.JTable" binding="tabLozinke">
+            <constraints/>
+            <properties>
+              <font size="18"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

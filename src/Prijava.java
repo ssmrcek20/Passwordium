@@ -40,12 +40,15 @@ public class Prijava extends JFrame {
                             if (Objects.equals(lozinkaIzDatoteke, upisanaLozinka)) {
                                 PrikazSifri prikazSifri= new PrikazSifri();
                                 prikazSifri.podaci(korIme, lozinka);
+                                prikazSifri.prikazPodataka();
                                 Prijava.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!");
                             }
                         } catch (NoSuchAlgorithmException ex) {
                             JOptionPane.showMessageDialog(Prijava.this, "Ne postoji SHA-256 na računalu!");
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(Prijava.this, "Došlo je do greške prilikom dohvata računa");
                         }
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(Prijava.this, "Došlo je do greške tijekom čitanja datoteke!");
