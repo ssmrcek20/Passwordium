@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 public class PrikazSifri extends JFrame {
     private JPanel panSifre;
@@ -45,6 +46,25 @@ public class PrikazSifri extends JFrame {
         btnUkloniLozinku.setBorderPainted(false);
         btnUkloniLozinku.setBackground(new Color(200,200,200));
         btnUkloniLozinku.setFocusPainted(false);
+        btnUkloniLozinku.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int odabraniRed = tabLozinke.getSelectedRow();
+                if(odabraniRed != -1){
+                    KripterPodataka kripterPodataka = new KripterPodataka();
+                    try {
+                        kripterPodataka.izbrisiPodatke(odabraniRed, korIme);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(PrikazSifri.this, "Greška prilikom brisanja!");
+                    }
+
+                    DefaultTableModel model = (DefaultTableModel) tabLozinke.getModel();
+                    model.removeRow(odabraniRed);
+                }else {
+                    JOptionPane.showMessageDialog(PrikazSifri.this, "Odaberi red za brisanje!");
+                }
+            }
+        });
 
         tabLozinke.setRowHeight(30);
         tabLozinke.getTableHeader().setReorderingAllowed(false);

@@ -68,13 +68,31 @@ public class KripterPodataka {
     public boolean vecPostojiNaziv(String korIme, String naziv) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(korIme + ".txt"));
         reader.readLine();
-        String tekst;
-        while ((tekst = reader.readLine()) != null) {
-            String[] dijelovi = tekst.split(":");
+        String racun;
+        while ((racun = reader.readLine()) != null) {
+            String[] dijelovi = racun.split(":");
             if (dijelovi[0].equals(naziv)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public void izbrisiPodatke(int odabraniRed, String korIme) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(korIme + ".txt"));
+        StringBuilder sb = new StringBuilder();
+        String racun;
+        int linija = -1;
+        while ((racun = reader.readLine()) != null) {
+            if (linija != odabraniRed) {
+                sb.append(racun).append("\n");
+            }
+            linija++;
+        }
+        reader.close();
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(korIme + ".txt"));
+        writer.write(sb.toString());
+        writer.close();
     }
 }
