@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Prijava extends JFrame {
     private JPanel panPrijava;
@@ -12,8 +14,7 @@ public class Prijava extends JFrame {
     private JButton btnPrijava;
     private JButton btnRegistracija;
     private JPasswordField txtLozinka;
-
-
+    private JLabel txtPreostaloVrijeme;
     public Prijava(){
         setTitle("Passwordium");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -26,6 +27,7 @@ public class Prijava extends JFrame {
         btnPrijava.setBackground(new Color(200,200,200));
         btnPrijava.setFocusPainted(false);
         btnPrijava.addActionListener(new ActionListener() {
+            final LoginNadzornik loginNadzornik = new LoginNadzornik();
             @Override
             public void actionPerformed(ActionEvent e) {
                 String korIme = txtKorIme.getText();
@@ -42,7 +44,14 @@ public class Prijava extends JFrame {
                                 prikazSifri.podaci(korIme, lozinka);
                                 Prijava.this.dispose();
                             } else {
-                                JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!");
+
+                                loginNadzornik.neuspjeliPokusaj();
+                                if(loginNadzornik.viseOdTriPokusaja()){
+                                    loginNadzornik.zakljucajLogin(btnPrijava);
+                                    JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!\nPreviše neuspjelih pokušaja pokušajte ponovno za 60s");
+                                }else{
+                                    JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!\nPreostalo pokušaja " + (3-loginNadzornik.brojNeuspjelihPokusaja()) );
+                                }
                             }
                         } catch (NoSuchAlgorithmException ex) {
                             JOptionPane.showMessageDialog(Prijava.this, "Ne postoji SHA-256 na računalu!");
@@ -51,7 +60,7 @@ public class Prijava extends JFrame {
                         JOptionPane.showMessageDialog(Prijava.this, "Došlo je do greške tijekom čitanja datoteke!");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(Prijava.this,"Korisničko ime ne postoji!");
+                    JOptionPane.showMessageDialog(Prijava.this,"Korisnik sa tim korisničkim imenom ne postoji!");
                 }
             }
         });
