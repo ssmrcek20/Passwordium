@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class Registracija extends JFrame {
     private JPanel panRegistracija;
