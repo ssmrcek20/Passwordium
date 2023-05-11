@@ -27,7 +27,7 @@
         </constraints>
         <properties>
           <font size="16"/>
-          <text value="Korisničko ime:"/>
+          <text value="*Korisničko ime:"/>
         </properties>
       </component>
       <component id="f41c4" class="javax.swing.JTextField" binding="txtKorIme">
@@ -49,7 +49,7 @@
         </constraints>
         <properties>
           <font size="16"/>
-          <text value="Lozinka:"/>
+          <text value="*Lozinka:"/>
         </properties>
       </component>
       <component id="7913a" class="javax.swing.JPasswordField" binding="txtLozinka">
@@ -71,7 +71,7 @@
         </constraints>
         <properties>
           <font size="16"/>
-          <text value="Naziv:"/>
+          <text value="*Naziv:"/>
         </properties>
       </component>
       <component id="97509" class="javax.swing.JTextField" binding="txtNaziv">
