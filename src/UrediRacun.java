@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 
@@ -13,6 +15,7 @@ public class UrediRacun extends JFrame {
     private JButton btnGenerirajLozinku;
     private JButton btnUredi;
     private JPanel panUredi;
+    private JLabel lblNatrag;
     private String korImeKorisnika;
     private String lozinkaKorisnika;
     private Racun racun;
@@ -85,6 +88,20 @@ public class UrediRacun extends JFrame {
                         JOptionPane.showMessageDialog(UrediRacun.this, "Došlo je do greške tijekom uređivanja računa!");
                     }
                 }
+            }
+        });
+        lblNatrag.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                PrikazSifri prikazSifri= new PrikazSifri();
+                prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
+                try {
+                    prikazSifri.prikazPodataka();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                UrediRacun.this.dispose();
             }
         });
     }
