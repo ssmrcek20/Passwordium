@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.nio.file.FileAlreadyExistsException;
 
 public class DodajLozinke extends JFrame{
@@ -12,6 +14,7 @@ public class DodajLozinke extends JFrame{
     private JTextField txtLink;
     private JButton btnGenerirajLozinku;
     private JButton btnDodaj;
+    private JLabel lblNatrag;
     private String korImeKorisnika;
     private String lozinkaKorisnika;
 
@@ -76,6 +79,20 @@ public class DodajLozinke extends JFrame{
                         JOptionPane.showMessageDialog(DodajLozinke.this, "Došlo je do greške tijekom spremanja novog računa!");
                     }
                 }
+            }
+        });
+        lblNatrag.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                PrikazSifri prikazSifri= new PrikazSifri();
+                prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
+                try {
+                    prikazSifri.prikazPodataka();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                DodajLozinke.this.dispose();
             }
         });
     }
