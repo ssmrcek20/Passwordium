@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
@@ -11,6 +13,8 @@ public class Registracija extends JFrame {
     private JTextField txtKorIme;
     private JButton btnRegistracija;
     private JPasswordField txtLozinka;
+    private JLabel lblPrijava;
+
     public Registracija() {
         setTitle("Passwordium");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -62,6 +66,13 @@ public class Registracija extends JFrame {
                         JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
                     }
                 }
+            }
+        });
+        lblPrijava.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Registracija.this.dispose();
             }
         });
     }
