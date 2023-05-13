@@ -1,3 +1,4 @@
+import javax.security.auth.login.Configuration;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
 import me.gosimple.nbvcxz.Nbvcxz;
+import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
+import me.gosimple.nbvcxz.scoring.TimeEstimate;
 
 public class Registracija extends JFrame {
     private JPanel panRegistracija;
