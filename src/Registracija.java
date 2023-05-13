@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
@@ -13,6 +15,10 @@ public class Registracija extends JFrame {
     private JButton btnRegistracija;
     private JPasswordField txtLozinka;
     private Nbvcxz nbvcxz;
+    private JLabel lblPrijava;
+    private JLabel lblPotvrdiLozinku;
+    private JPasswordField txtPotvrdaLozinke;
+
     public Registracija() {
         setTitle("Passwordium");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -43,29 +49,56 @@ public class Registracija extends JFrame {
                     txtLozinka.setBackground(Color.white);
                 }
 
+                if (txtPotvrdaLozinke.getPassword().length == 0) {
+                    txtPotvrdaLozinke.setBackground(Color.red);
+                    ispravno = false;
+                } else {
+                    txtPotvrdaLozinke.setBackground(Color.white);
+                }
+
                 if(ispravno){
                     txtLozinka.setBackground(Color.white);
-                    HasherLozinke hasherLozinke= new HasherLozinke();
-                    String hashedLozinka = null;
-                    try {
-                        hashedLozinka = hasherLozinke.napraviHash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
 
+                    if(potvrdaLozinke()){
+                        HasherLozinke hasherLozinke= new HasherLozinke();
+                        String hashedLozinka = null;
                         try {
-                            hasherLozinke.spremiLozinku(txtKorIme.getText(),hashedLozinka);
-                            JOptionPane.showMessageDialog(Registracija.this,"Uspješna registarcija!");
-                            Registracija.this.dispose();
-                        } catch (FileAlreadyExistsException ex){
-                            JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
-                        } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
-                        }
+                            hashedLozinka = hasherLozinke.napraviHash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
 
-                    } catch (NoSuchAlgorithmException ex) {
-                        JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
+                            try {
+                                hasherLozinke.spremiLozinku(txtKorIme.getText(),hashedLozinka);
+                                JOptionPane.showMessageDialog(Registracija.this,"Uspješna registarcija!");
+                                Registracija.this.dispose();
+                            } catch (FileAlreadyExistsException ex){
+                                JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
+                            } catch (IOException ex) {
+                                JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
+                            }
+
+                        } catch (NoSuchAlgorithmException ex) {
+                            JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(Registracija.this,"Upisana lozinka se razlikuje od vrijednosti upisane u polje za potvrdu lozinke!");
                     }
                 }
             }
         });
+        lblPrijava.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Registracija.this.dispose();
+            }
+        });
     }
+    private boolean potvrdaLozinke(){
+        boolean potvrdena = false;
+        String lozinka = new String(txtLozinka.getPassword());
+        String confLozinka = new String(txtPotvrdaLozinke.getPassword());
 
+        if(lozinka.equals(confLozinka)) potvrdena = true;
+
+        return potvrdena;
+    }
 }
