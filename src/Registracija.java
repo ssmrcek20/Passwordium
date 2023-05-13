@@ -5,12 +5,14 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
+import me.gosimple.nbvcxz.Nbvcxz;
 
 public class Registracija extends JFrame {
     private JPanel panRegistracija;
     private JTextField txtKorIme;
     private JButton btnRegistracija;
     private JPasswordField txtLozinka;
+    private Nbvcxz nbvcxz;
     public Registracija() {
         setTitle("Passwordium");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -65,4 +67,5 @@ public class Registracija extends JFrame {
             }
         });
     }
+
 }
