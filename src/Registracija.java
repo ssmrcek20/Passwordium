@@ -14,7 +14,6 @@ public class Registracija extends JFrame {
     private JTextField txtKorIme;
     private JButton btnRegistracija;
     private JPasswordField txtLozinka;
-    private Nbvcxz nbvcxz;
     private JLabel lblPrijava;
     private JLabel lblPotvrdiLozinku;
     private JPasswordField txtPotvrdaLozinke;
@@ -33,51 +32,38 @@ public class Registracija extends JFrame {
         btnRegistracija.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean ispravno = true;
+                if( provjeriJesuLiPodaciUneseni() ){
 
-                if (txtKorIme.getText().equals("")) {
-                    txtKorIme.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtKorIme.setBackground(Color.white);
-                }
-
-                if (txtLozinka.getPassword().length == 0) {
-                    txtLozinka.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtLozinka.setBackground(Color.white);
-                }
-
-                if (txtPotvrdaLozinke.getPassword().length == 0) {
-                    txtPotvrdaLozinke.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtPotvrdaLozinke.setBackground(Color.white);
-                }
-
-                if(ispravno){
                     txtLozinka.setBackground(Color.white);
 
-                    if(potvrdaLozinke()){
-                        HasherLozinke hasherLozinke= new HasherLozinke();
-                        String hashedLozinka = null;
-                        try {
-                            hashedLozinka = hasherLozinke.napraviHash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
+                    if( potvrdaLozinke() ){
+
+                        if( provjeriJacinuLozinke() ){
+
+                            HasherLozinke hasherLozinke= new HasherLozinke();
+                            String hashedLozinka = null;
 
                             try {
-                                hasherLozinke.spremiLozinku(txtKorIme.getText(),hashedLozinka);
-                                JOptionPane.showMessageDialog(Registracija.this,"Uspješna registarcija!");
-                                Registracija.this.dispose();
-                            } catch (FileAlreadyExistsException ex){
-                                JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
-                            } catch (IOException ex) {
-                                JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
-                            }
+                                hashedLozinka = hasherLozinke.napraviHash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
 
-                        } catch (NoSuchAlgorithmException ex) {
-                            JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
+                                try {
+                                    hasherLozinke.spremiLozinku(txtKorIme.getText(),hashedLozinka);
+                                    JOptionPane.showMessageDialog(Registracija.this,"Uspješna registarcija!");
+                                    Registracija.this.dispose();
+                                } catch (FileAlreadyExistsException ex){
+                                    JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
+                                } catch (IOException ex) {
+                                    JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
+                                }
+
+                            } catch (NoSuchAlgorithmException ex) {
+                                JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(Registracija.this,"Upisana lozinka nije dovoljno snažna!");
+
                         }
+
                     }else{
                         JOptionPane.showMessageDialog(Registracija.this,"Upisana lozinka se razlikuje od vrijednosti upisane u polje za potvrdu lozinke!");
                     }
@@ -92,6 +78,14 @@ public class Registracija extends JFrame {
             }
         });
     }
+
+    private boolean provjeriJacinuLozinke() {
+        Nbvcxz nbvcxz = new Nbvcxz();
+        String lozinka = new String(txtLozinka.getPassword());
+        me.gosimple.nbvcxz.scoring.Result rezultat = nbvcxz.estimate(lozinka);
+        return rezultat.isMinimumEntropyMet();
+    }
+
     private boolean potvrdaLozinke(){
         boolean potvrdena = false;
         String lozinka = new String(txtLozinka.getPassword());
@@ -100,5 +94,30 @@ public class Registracija extends JFrame {
         if(lozinka.equals(confLozinka)) potvrdena = true;
 
         return potvrdena;
+    }
+
+    private boolean provjeriJesuLiPodaciUneseni(){
+        boolean ispravno = true;
+        if (txtKorIme.getText().equals("")) {
+            txtKorIme.setBackground(Color.red);
+            ispravno = false;
+        } else {
+            txtKorIme.setBackground(Color.white);
+        }
+
+        if (txtLozinka.getPassword().length == 0) {
+            txtLozinka.setBackground(Color.red);
+            ispravno = false;
+        } else {
+            txtLozinka.setBackground(Color.white);
+        }
+
+        if (txtPotvrdaLozinke.getPassword().length == 0) {
+            txtPotvrdaLozinke.setBackground(Color.red);
+            ispravno = false;
+        } else {
+            txtPotvrdaLozinke.setBackground(Color.white);
+        }
+        return ispravno;
     }
 }
