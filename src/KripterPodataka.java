@@ -17,7 +17,7 @@ public class KripterPodataka {
         reader.readLine();
         String racun = reader.readLine();
         while (racun != null) {
-            String[] dijelovi = racun.split(":");
+            String[] dijelovi = racun.split(";");
             Racun racunObjekt;
 
             if(dijelovi.length == 4) racunObjekt = new Racun(dijelovi[0],dijelovi[1],dijelovi[2],dijelovi[3]);
@@ -38,7 +38,7 @@ public class KripterPodataka {
             String kriptiranaLozinka = kripter(racun, korIme, lozinka);
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(korIme + ".txt", true));
-            writer.write(racun.Naziv + ":" + racun.KorIme + ":" + kriptiranaLozinka + ":" + racun.Link + "\n");
+            writer.write(racun.Naziv + ";" + racun.KorIme + ";" + kriptiranaLozinka + ";" + racun.Link + "\n");
             writer.close();
         }
     }
@@ -70,7 +70,7 @@ public class KripterPodataka {
         reader.readLine();
         String racun;
         while ((racun = reader.readLine()) != null) {
-            String[] dijelovi = racun.split(":");
+            String[] dijelovi = racun.split(";");
             if (dijelovi[0].equals(naziv)) {
                 return true;
             }
