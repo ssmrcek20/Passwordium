@@ -50,9 +50,11 @@ public class PrikazSifri extends JFrame {
                     Racun racun = new Racun(
                             tabLozinke.getValueAt(odabraniRed,0).toString(),
                             tabLozinke.getValueAt(odabraniRed,1).toString(),
-                            tabLozinke.getValueAt(odabraniRed,2).toString(),
-                            tabLozinke.getValueAt(odabraniRed,3).toString()
+                            tabLozinke.getValueAt(odabraniRed,2).toString()
                     );
+                    if(tabLozinke.getValueAt(odabraniRed,3) != null){
+                        racun.Link = tabLozinke.getValueAt(odabraniRed,3).toString();
+                    }
 
                     UrediRacun urediRacun = new UrediRacun();
                     urediRacun.podaci(korIme, lozinka, racun, odabraniRed);
