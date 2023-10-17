@@ -23,7 +23,7 @@ public class UrediRacun extends JFrame {
 
     public UrediRacun(){
         setTitle("Passwordium");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1080,720);
         setLocationRelativeTo(null);
         setVisible(true);
