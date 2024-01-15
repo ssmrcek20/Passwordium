@@ -8,6 +8,12 @@ public class JwtManager {
     private String username;
     private Date jwtExpiresAt;
 
+    public void saveTokens(String jwt, String refreshToken, Date refreshTokenExpiresAt){
+        this.jwt = jwt;
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    }
+
     public void logout(){
         jwt = "";
         refreshToken = "";
