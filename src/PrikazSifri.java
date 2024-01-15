@@ -16,6 +16,7 @@ public class PrikazSifri extends JFrame {
     private JButton btnUrediLozinku;
     private JButton btnUkloniLozinku;
     private JScrollPane scrollPan;
+    private JButton btn2FAPostavke;
     private String korIme;
     private String lozinka;
 
@@ -26,6 +27,18 @@ public class PrikazSifri extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setContentPane(panSifre);
+
+        btn2FAPostavke.setBorderPainted(false);
+        btn2FAPostavke.setBackground(new Color(200,200,200));
+        btn2FAPostavke.setFocusPainted(false);
+
+        btn2FAPostavke.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TwoFAPostavke FApostavke = new TwoFAPostavke();
+                PrikazSifri.this.dispose();
+            }
+        });
 
         btnDodajLozinku.setBorderPainted(false);
         btnDodajLozinku.setBackground(new Color(200,200,200));

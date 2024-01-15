@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class LoginNadzornik {
+    private boolean Aktiviran2FA;
     private int brojPokusaja;
 
     private final Timer timer;
