@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
 
 public class PrikazSifri extends JFrame {
     private JPanel panSifre;
@@ -27,7 +29,6 @@ public class PrikazSifri extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setContentPane(panSifre);
-
         btn2FAPostavke.setBorderPainted(false);
         btn2FAPostavke.setBackground(new Color(200,200,200));
         btn2FAPostavke.setFocusPainted(false);
@@ -87,13 +88,17 @@ public class PrikazSifri extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int odabraniRed = tabLozinke.getSelectedRow();
                 if(odabraniRed != -1){
-                    KripterPodataka kripterPodataka = new KripterPodataka();
+                    HttpRequestManager httpRequestManager = null;
                     try {
-                        kripterPodataka.izbrisiPodatke(odabraniRed, korIme);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(PrikazSifri.this, "Greška prilikom brisanja!");
+                        httpRequestManager = new HttpRequestManager();
+                    } catch (MalformedURLException ex) {
+                        throw new RuntimeException(ex);
                     }
-
+                    try {
+                        httpRequestManager.sendAccountsDeleteRequest(LoginNadzornik.getInstance().jwtToken, odabraniRed);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     DefaultTableModel model = (DefaultTableModel) tabLozinke.getModel();
                     model.removeRow(odabraniRed);
                 }else {
@@ -117,9 +122,9 @@ public class PrikazSifri extends JFrame {
     }
 
     public void prikazPodataka() throws Exception {
-        KripterPodataka kripterPodataka = new KripterPodataka();
-
-        Racun[] racuni = kripterPodataka.dohvatiPodatke(korIme,lozinka);
+        HttpRequestManager httpRequestManager = null;
+        httpRequestManager = new HttpRequestManager();
+        List<Account> racuni = httpRequestManager.sendAccountsRequest(LoginNadzornik.getInstance().jwtToken);
         String[] stupci = {"Naziv", "Korisničko ime", "Lozinka", "Link"};
 
         DefaultTableModel model = new DefaultTableModel(stupci, 0){
@@ -128,8 +133,8 @@ public class PrikazSifri extends JFrame {
                 return false;
             }
         };
-        for (Racun racun : racuni) {
-            Object[] red = {racun.Naziv,racun.KorIme,racun.Lozinka,racun.Link};
+        for (Account racun : racuni) {
+            Object[] red = {racun.getName(),racun.getUsername(),racun.getPassword(),racun.getUrl()};
             model.addRow(red);
         }
         tabLozinke.setModel(model);

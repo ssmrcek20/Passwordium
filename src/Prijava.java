@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Timer;
@@ -28,43 +29,44 @@ public class Prijava extends JFrame {
         btnPrijava.setBackground(new Color(200,200,200));
         btnPrijava.setFocusPainted(false);
         btnPrijava.addActionListener(new ActionListener() {
-            final LoginNadzornik loginNadzornik = new LoginNadzornik();
+            final LoginNadzornik loginNadzornik = LoginNadzornik.getInstance();
             @Override
             public void actionPerformed(ActionEvent e) {
                 String korIme = txtKorIme.getText();
                 String lozinka = new String(txtLozinka.getPassword());
                 HasherLozinke hasherLozinke = new HasherLozinke();
-                if(hasherLozinke.postojiHashDatoteka(korIme)) {
+                HttpRequestManager httpRequestManager = null;
+                try {
+                    httpRequestManager = new HttpRequestManager();
+                } catch (MalformedURLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                String odgovor = null;
+                try {
+                    odgovor = httpRequestManager.sendLoginRequest(korIme,lozinka);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                if(odgovor!=null){
+                    loginNadzornik.korime = korIme;
+                    loginNadzornik.jwtToken = odgovor;
+                    PrikazSifri prikazSifri= new PrikazSifri();
+                    prikazSifri.podaci(korIme, lozinka);
                     try {
-                        String lozinkaIzDatoteke = hasherLozinke.dohvatiHash(korIme);
-                        try {
-                            String upisanaLozinka = hasherLozinke.napraviHash(korIme, lozinka);
-
-                            if (Objects.equals(lozinkaIzDatoteke, upisanaLozinka)) {
-                                PrikazSifri prikazSifri= new PrikazSifri();
-                                prikazSifri.podaci(korIme, lozinka);
-                                prikazSifri.prikazPodataka();
-                                Prijava.this.dispose();
-                            } else {
-
-                                loginNadzornik.neuspjeliPokusaj();
-                                if(loginNadzornik.viseOdTriPokusaja()){
-                                    loginNadzornik.zakljucajLogin(btnPrijava);
-                                    JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!\nPreviše neuspjelih pokušaja pokušajte ponovno za 60s");
-                                }else{
-                                    JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!\nPreostalo pokušaja " + (3-loginNadzornik.brojNeuspjelihPokusaja()) );
-                                }
-                            }
-                        } catch (NoSuchAlgorithmException ex) {
-                            JOptionPane.showMessageDialog(Prijava.this, "Ne postoji SHA-256 na računalu!");
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(Prijava.this, "Došlo je do greške prilikom dohvata računa");
-                        }
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(Prijava.this, "Došlo je do greške tijekom čitanja datoteke!");
+                        prikazSifri.prikazPodataka();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(Prijava.this,"Korisnik sa tim korisničkim imenom ne postoji!");
+                    System.out.println(odgovor);
+                    Prijava.this.dispose();
+                }else{
+                    loginNadzornik.neuspjeliPokusaj();
+                    if(loginNadzornik.viseOdTriPokusaja()){
+                        loginNadzornik.zakljucajLogin(btnPrijava);
+                        JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!\nPreviše neuspjelih pokušaja pokušajte ponovno za 60s");
+                    }else{
+                        JOptionPane.showMessageDialog(Prijava.this, "Kriva lozinka!\nPreostalo pokušaja " + (3-loginNadzornik.brojNeuspjelihPokusaja()) );
+                    }
                 }
             }
         });

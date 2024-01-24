@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
 
 public class UrediRacun extends JFrame {
@@ -65,17 +66,20 @@ public class UrediRacun extends JFrame {
 
 
                 if(ispravno) {
-                    KripterPodataka kripterPodataka = new KripterPodataka();
+                    HttpRequestManager httpRequestManager = null;
                     try {
-                        kripterPodataka.izbrisiPodatke(odabraniRed, korImeKorisnika);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Greška prilikom uređivanja!");
+                        httpRequestManager = new HttpRequestManager();
+                    } catch (MalformedURLException ex) {
+                        throw new RuntimeException(ex);
                     }
-
-                    Racun noviRacun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
+                    Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
                     try {
-                        kripterPodataka.spremiPodatke(noviRacun,korImeKorisnika,lozinkaKorisnika);
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
+                        int response = httpRequestManager.sendAccountsPutRequest(LoginNadzornik.getInstance().jwtToken, racun);
+                        if(response==200){
+                            JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
+                        }else{
+                            JOptionPane.showMessageDialog(UrediRacun.this, "Greška pri uređivanju računa!");
+                        }
 
                         PrikazSifri prikazSifri= new PrikazSifri();
                         prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);

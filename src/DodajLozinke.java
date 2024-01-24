@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
 
 public class DodajLozinke extends JFrame{
@@ -63,11 +64,21 @@ public class DodajLozinke extends JFrame{
 
 
                 if(ispravno) {
-                    KripterPodataka kripterPodataka = new KripterPodataka();
+                    HttpRequestManager httpRequestManager = null;
+                    try {
+                        httpRequestManager = new HttpRequestManager();
+                    } catch (MalformedURLException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
                     try {
-                        kripterPodataka.spremiPodatke(racun,korImeKorisnika,lozinkaKorisnika);
-                        JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
+                        int response = httpRequestManager.sendAccountsPostRequest(LoginNadzornik.getInstance().jwtToken, racun);
+                        if(response==200){
+                            JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
+                        }else{
+                            JOptionPane.showMessageDialog(DodajLozinke.this, "Greška pri dodavanju računa!");
+                        }
+
 
                         PrikazSifri prikazSifri= new PrikazSifri();
                         prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);

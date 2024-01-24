@@ -7,14 +7,24 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class LoginNadzornik {
+    private static LoginNadzornik instance;
     private boolean Aktiviran2FA;
+    public String korime;
+    public String jwtToken;
     private int brojPokusaja;
 
     private final Timer timer;
 
-    LoginNadzornik() {
+    private LoginNadzornik() {
         brojPokusaja=0;
         timer = new Timer();
+    }
+
+    public static LoginNadzornik getInstance() {
+        if (instance == null) {
+            instance = new LoginNadzornik();
+        }
+        return instance;
     }
     public void neuspjeliPokusaj(){
         brojPokusaja++;

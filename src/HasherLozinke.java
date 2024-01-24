@@ -29,6 +29,39 @@ public class HasherLozinke {
         }
     }
 
+    public void dodajTOTPKljuc(String totpKljuc, String korIme)throws IOException{
+        StringBuilder fileContent = new StringBuilder();
+        if(postojiHashDatoteka(korIme)){
+            String postojeciPodaci;
+            String linija;
+            String[] linije;
+            try (BufferedReader reader = new BufferedReader(new FileReader(korIme + ".txt"))) {
+                while ((linija = reader.readLine()) != null) {
+                    fileContent.append(linija);
+                    System.out.println(linija);
+                }
+                linije = fileContent.toString().split(System.lineSeparator());
+                String[] prviDio = linije[0].split(";");
+                postojeciPodaci = prviDio[0];
+            }
+
+            if (postojeciPodaci != null && postojeciPodaci.endsWith("\n")) {
+                postojeciPodaci = postojeciPodaci.substring(0, postojeciPodaci.length() - 1);
+            }
+
+            linije[0] = postojeciPodaci + ";" + totpKljuc + "\n";
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(korIme + ".txt"))) {
+                for (String line : linije) {
+                    writer.write(line);
+                    System.out.println(line);
+                }
+            }
+
+        } else {
+            throw new FileNotFoundException("To korisničko ime ne postoji!");
+        }
+    }
+
     public boolean postojiHashDatoteka(String korIme){
         File datoteka = new File(korIme + ".txt");
         return datoteka.exists();

@@ -2,12 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
 import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
 import me.gosimple.nbvcxz.scoring.TimeEstimate;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpResponse;
 
 public class Registracija extends JFrame {
     private JPanel panRegistracija;
@@ -49,19 +53,21 @@ public class Registracija extends JFrame {
                             HasherLozinke hasherLozinke= new HasherLozinke();
                             String hashedLozinka = null;
                             if(provjeriJacinuLozinke()>40d){
+                                HttpRequestManager httpManager = null;
                                 try {
-                                    hashedLozinka = hasherLozinke.napraviHash(txtKorIme.getText(),new String(txtLozinka.getPassword()));
-                                    try {
-                                        hasherLozinke.spremiLozinku(txtKorIme.getText(),hashedLozinka);
+                                    httpManager = new HttpRequestManager();
+                                } catch (MalformedURLException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                                try {
+                                    int response = httpManager.sendRegistrationRequest(txtKorIme.getText(), new String(txtLozinka.getPassword()));
+                                    if(response==200){
                                         JOptionPane.showMessageDialog(Registracija.this,"Uspješna registracija!");
                                         Registracija.this.dispose();
-                                    } catch (FileAlreadyExistsException ex){
-                                        JOptionPane.showMessageDialog(Registracija.this,ex.getMessage());
-                                    } catch (IOException ex) {
-                                        JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške tijekom upisa u datoteku!");
+                                    }else{
+                                        JOptionPane.showMessageDialog(Registracija.this,"Došlo je do greške!");
                                     }
-
-                                } catch (NoSuchAlgorithmException ex) {
+                                } catch (IOException ex) {
                                     JOptionPane.showMessageDialog(Registracija.this,"Ne postoji SHA-256 na računalu!");
                                 }
                             }else{
