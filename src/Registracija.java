@@ -4,10 +4,6 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
-import me.gosimple.nbvcxz.Nbvcxz;
-import me.gosimple.nbvcxz.resources.Configuration;
-import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
-import me.gosimple.nbvcxz.scoring.TimeEstimate;
 
 public class Registracija extends JFrame {
     private JPanel panRegistracija;
@@ -19,7 +15,6 @@ public class Registracija extends JFrame {
     private JPasswordField txtPotvrdaLozinke;
     private JProgressBar PgbJacinaLozinke;
     private JLabel lblJacinaLozinke;
-    private Nbvcxz nbvcxz;
 
     public Registracija() {
         setTitle("Passwordium");
@@ -33,8 +28,6 @@ public class Registracija extends JFrame {
         btnRegistracija.setBackground(new Color(200,200,200));
         btnRegistracija.setFocusPainted(false);
 
-        Configuration configuration = new ConfigurationBuilder().setMinimumEntropy(40d).createConfiguration();
-        nbvcxz = new Nbvcxz(configuration);
         btnRegistracija.addActionListener(new ActionListener() {
 
 
@@ -99,8 +92,7 @@ public class Registracija extends JFrame {
 
     private double provjeriJacinuLozinke() {
         String lozinka = new String(txtLozinka.getPassword());
-        me.gosimple.nbvcxz.scoring.Result rezultat = nbvcxz.estimate(lozinka);
-        return rezultat.getEntropy();
+        return 12;
     }
 
     private boolean potvrdaLozinke(){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Prijava">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Views.Prijava">
   <grid id="27dc6" binding="panPrijava" layout-manager="GridLayoutManager" row-count="9" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="40" left="40" bottom="40" right="40"/>
     <constraints>
@@ -16,7 +16,7 @@
         </constraints>
         <properties>
           <font size="26"/>
-          <text value="Prijava"/>
+          <text value="Views.Prijava"/>
         </properties>
       </component>
       <component id="33753" class="javax.swing.JLabel">

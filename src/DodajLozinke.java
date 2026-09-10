@@ -1,4 +1,3 @@
-import me.gosimple.nbvcxz.resources.Generator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -97,7 +96,7 @@ public class DodajLozinke extends JFrame{
             }
         });
         btnGenerirajLozinku.addActionListener(e -> {
-            String lozinka = Generator.generatePassphrase("!-?", 5);
+            String lozinka = "Abac";
             txtLozinka.setText(lozinka);
         });
     }

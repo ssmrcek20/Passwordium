@@ -1,8 +1,6 @@
+package Services;
+
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.EventListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,7 +10,7 @@ public class LoginNadzornik {
 
     private final Timer timer;
 
-    LoginNadzornik() {
+    public LoginNadzornik() {
         brojPokusaja=0;
         timer = new Timer();
     }
