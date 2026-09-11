@@ -1,42 +1,44 @@
+package Views;
+
+import Objects.Account;
+import Services.KripterPodataka;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 
-public class UrediRacun extends JFrame {
+public class DodajLozinke extends JFrame{
+    private JPanel panDodaj;
     private JTextField txtKorIme;
     private JPasswordField txtLozinka;
     private JTextField txtNaziv;
     private JTextField txtLink;
     private JButton btnGenerirajLozinku;
-    private JButton btnUredi;
-    private JPanel panUredi;
+    private JButton btnDodaj;
     private JLabel lblNatrag;
     private String korImeKorisnika;
     private String lozinkaKorisnika;
-    private Racun racun;
-    private int odabraniRed;
 
-    public UrediRacun(){
+    public DodajLozinke(){
         setTitle("Passwordium");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1080,720);
         setLocationRelativeTo(null);
         setVisible(true);
-        setContentPane(panUredi);
+        setContentPane(panDodaj);
 
         btnGenerirajLozinku.setBorderPainted(false);
         btnGenerirajLozinku.setBackground(new Color(200,200,200));
         btnGenerirajLozinku.setFocusPainted(false);
 
-        btnUredi.setBorderPainted(false);
-        btnUredi.setBackground(new Color(200,200,200));
-        btnUredi.setFocusPainted(false);
-        btnUredi.addActionListener(new ActionListener() {
+        btnDodaj.setBorderPainted(false);
+        btnDodaj.setBackground(new Color(200,200,200));
+        btnDodaj.setFocusPainted(false);
+        btnDodaj.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean ispravno = true;
@@ -66,26 +68,20 @@ public class UrediRacun extends JFrame {
 
                 if(ispravno) {
                     KripterPodataka kripterPodataka = new KripterPodataka();
+                    Account account = new Account(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
                     try {
-                        kripterPodataka.izbrisiPodatke(odabraniRed, korImeKorisnika);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Greška prilikom uređivanja!");
-                    }
-
-                    Racun noviRacun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
-                    try {
-                        kripterPodataka.spremiPodatke(noviRacun,korImeKorisnika,lozinkaKorisnika);
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
+                        kripterPodataka.spremiPodatke(account,korImeKorisnika,lozinkaKorisnika);
+                        JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
 
                         PrikazSifri prikazSifri= new PrikazSifri();
                         prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
                         prikazSifri.prikazPodataka();
-                        UrediRacun.this.dispose();
+                        DodajLozinke.this.dispose();
 
                     } catch (FileAlreadyExistsException ex){
-                        JOptionPane.showMessageDialog(UrediRacun.this,ex.getMessage());
+                        JOptionPane.showMessageDialog(DodajLozinke.this,ex.getMessage());
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Došlo je do greške tijekom uređivanja računa!");
+                        JOptionPane.showMessageDialog(DodajLozinke.this, "Došlo je do greške tijekom spremanja novog računa!");
                     }
                 }
             }
@@ -101,22 +97,17 @@ public class UrediRacun extends JFrame {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-                UrediRacun.this.dispose();
+                DodajLozinke.this.dispose();
             }
+        });
+        btnGenerirajLozinku.addActionListener(e -> {
+            String lozinka = "Abac";
+            txtLozinka.setText(lozinka);
         });
     }
 
-    public void prikazPodataka() {
-        txtNaziv.setText(racun.Naziv);
-        txtKorIme.setText(racun.KorIme);
-        txtLink.setText(racun.Link);
-        txtLozinka.setText(racun.Lozinka);
-    }
-
-    public void podaci(String korIme, String lozinka, Racun racun, int odabraniRed) {
+    public void podaci(String korIme, String lozinka) {
         this.korImeKorisnika = korIme;
         this.lozinkaKorisnika = lozinka;
-        this.racun = racun;
-        this.odabraniRed = odabraniRed;
     }
 }

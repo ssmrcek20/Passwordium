@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LoginNadzornik {
+public class LoginSurveyer {
     private boolean Aktiviran2FA;
     private int brojPokusaja;
 
     private final Timer timer;
 
-    public LoginNadzornik() {
+    public LoginSurveyer() {
         brojPokusaja=0;
         timer = new Timer();
     }

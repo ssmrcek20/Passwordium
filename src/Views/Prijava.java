@@ -6,9 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.AuthProvider;
-import Services.LoginNadzornik;
+
+import Services.LoginSurveyer;
 import Services.UserService;
+import Services.VaultCryptoService;
+import Services.VaultSession;
 
 public class Prijava extends JFrame {
     private JPanel panPrijava;
@@ -18,7 +20,7 @@ public class Prijava extends JFrame {
     private JPasswordField txtLozinka;
     private JPasswordField txtTOTP;
 
-    public Prijava(){
+    public Prijava() {
         setTitle("Passwordium");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -30,39 +32,44 @@ public class Prijava extends JFrame {
         setVisible(true);
 
         btnPrijava.setBorderPainted(false);
-        btnPrijava.setBackground(new Color(200,200,200));
+        btnPrijava.setBackground(new Color(200, 200, 200));
         btnPrijava.setFocusPainted(false);
         btnPrijava.addActionListener(new ActionListener() {
-            final LoginNadzornik loginNadzornik = new LoginNadzornik();
+            final LoginSurveyer loginSurveyer = new LoginSurveyer();
             final UserService userService = new UserService();
+            final VaultCryptoService vaultCryptoService = new VaultCryptoService();
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                String korIme = txtKorIme.getText();
-                char[] passwordChars = txtLozinka.getPassword();
-                String lozinka = new String(passwordChars);
+                String korIme =
+                        txtKorIme.getText();
+                char[] passwordChars =
+                        txtLozinka.getPassword();
+                byte[] kek = null;
                 try {
-
-                    LoginResponse response =
-                            userService.login(korIme, lozinka);
-
-
-                    // ovdje:
-                    // 1. iz lozinke + VaultSalt deriviraš KEK
-                    // 2. decryptaš VaultKey
-                    // 3. spremiš VaultKey samo u RAM
-
+                    LoginResponse response = userService.login(korIme, new String(passwordChars));
+                    kek = vaultCryptoService.deriveKek(passwordChars, response.getVaultSalt());
+                    byte[] vaultKey = vaultCryptoService.decryptVaultKey(kek, response.getEncryptedVaultKey(),
+                            response.getVaultKeyNonce(), response.getVaultKeyTag());
+                    VaultSession.unlock(vaultKey, response.getJwt());
+                    JOptionPane.showMessageDialog(Prijava.this, "Uspješna prijava!");
+                    PrikazSifri prikazSifri = new PrikazSifri();
+                    prikazSifri.setVisible(true);
                     Prijava.this.dispose();
-
                 } catch (Exception ex) {
-
-                    loginNadzornik.neuspjeliPokusaj();
-
-                    if (loginNadzornik.viseOdTriPokusaja()) {
-                        loginNadzornik.zakljucajLogin(btnPrijava);
+                    ex.printStackTrace();
+                    loginSurveyer.neuspjeliPokusaj();
+                    if (loginSurveyer.viseOdTriPokusaja()) {
+                        loginSurveyer.zakljucajLogin(btnPrijava);
+                        JOptionPane.showMessageDialog(Prijava.this, "Previše neuspjelih pokušaja prijave.");
+                    } else {
+                        JOptionPane.showMessageDialog(Prijava.this, "Neispravno korisničko ime ili lozinka.");
                     }
-
                 } finally {
                     java.util.Arrays.fill(passwordChars, '\0');
+                    if (kek != null) {
+                        java.util.Arrays.fill(kek, (byte) 0);
+                    }
                 }
             }
         });
@@ -72,11 +79,6 @@ public class Prijava extends JFrame {
         btnRegistracija.setOpaque(false);
         btnRegistracija.setFocusPainted(false);
         btnRegistracija.setForeground(Color.blue);
-        btnRegistracija.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {/*new Registracija();*/}
-        });
-
+        btnRegistracija.addActionListener(e -> new Registracija());
     }
-
 }

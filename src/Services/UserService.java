@@ -1,6 +1,7 @@
 package Services;
 
 import Requests.LoginRequest;
+import Requests.RegisterRequest;
 import Responses.LoginResponse;
 import com.google.gson.Gson;
 
@@ -12,7 +13,7 @@ import java.net.http.HttpResponse;
 
 public class UserService {
     private static final String API_URL =
-            "https://passwordium-api-7jz2.onrender.com/api/Users/Login";
+            "https://passwordium-api-7jz2.onrender.com/api/Users/";
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -22,15 +23,14 @@ public class UserService {
         gson = new Gson();
     }
 
-    public LoginResponse login(String korisnickoIme, String lozinka)
-            throws Exception {
+    public LoginResponse login(String korisnickoIme, String lozinka) throws Exception {
 
         String json = gson.toJson(
                 new LoginRequest(korisnickoIme, lozinka)
         );
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL))
+                .uri(URI.create(API_URL+"Login"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -40,7 +40,6 @@ public class UserService {
                         request,
                         HttpResponse.BodyHandlers.ofString()
                 );
-        System.out.println(response);
         if (response.statusCode() == 401) {
             throw new FailedLoginException();
         }
@@ -55,5 +54,27 @@ public class UserService {
                 response.body(),
                 LoginResponse.class
         );
+    }
+
+    public void register(String username, String password, String vaultSalt,
+                         String encryptedVaultKey, String vaultKeyNonce, String vaultKeyTag) throws Exception {
+
+        RegisterRequest registerRequest = new RegisterRequest(username, password, vaultSalt,
+                                                            encryptedVaultKey, vaultKeyNonce, vaultKeyTag);
+
+        String json = gson.toJson(registerRequest);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(API_URL + "Register"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(json))
+                        .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new Exception("Registracija nije uspjela. " + response.body()
+            );
+        }
     }
 }
