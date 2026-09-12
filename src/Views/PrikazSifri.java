@@ -1,3 +1,13 @@
+package Views;
+
+import Objects.Account;
+import Responses.AccountResponse;
+import Services.AccountService;
+import Services.KripterPodataka;
+import Services.VaultCryptoService;
+import Services.VaultSession;
+import com.google.gson.Gson;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -8,8 +18,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.List;
+import java.util.Vector;
+
+import static java.awt.Color.red;
 
 public class PrikazSifri extends JFrame {
     private JPanel panSifre;
@@ -21,6 +32,7 @@ public class PrikazSifri extends JFrame {
     private JButton btn2FAPostavke;
     private String korIme;
     private String lozinka;
+    private final java.util.List<Account> accounts = new java.util.ArrayList<>();
 
     public PrikazSifri(){
         setTitle("Passwordium");
@@ -29,6 +41,7 @@ public class PrikazSifri extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setContentPane(panSifre);
+
         btn2FAPostavke.setBorderPainted(false);
         btn2FAPostavke.setBackground(new Color(200,200,200));
         btn2FAPostavke.setFocusPainted(false);
@@ -61,17 +74,17 @@ public class PrikazSifri extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int odabraniRed = tabLozinke.getSelectedRow();
                 if(odabraniRed != -1){
-                    Racun racun = new Racun(
+                    Account account = new Account(
                             tabLozinke.getValueAt(odabraniRed,0).toString(),
                             tabLozinke.getValueAt(odabraniRed,1).toString(),
                             tabLozinke.getValueAt(odabraniRed,2).toString()
                     );
                     if(tabLozinke.getValueAt(odabraniRed,3) != null){
-                        racun.Link = tabLozinke.getValueAt(odabraniRed,3).toString();
+                        account.Link = tabLozinke.getValueAt(odabraniRed,3).toString();
                     }
 
                     UrediRacun urediRacun = new UrediRacun();
-                    urediRacun.podaci(korIme, lozinka, racun, odabraniRed);
+                    urediRacun.podaci(korIme, lozinka, account, odabraniRed);
                     urediRacun.prikazPodataka();
                     PrikazSifri.this.dispose();
                 }else {
@@ -88,17 +101,13 @@ public class PrikazSifri extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int odabraniRed = tabLozinke.getSelectedRow();
                 if(odabraniRed != -1){
-                    HttpRequestManager httpRequestManager = null;
+                    KripterPodataka kripterPodataka = new KripterPodataka();
                     try {
-                        httpRequestManager = new HttpRequestManager();
-                    } catch (MalformedURLException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    try {
-                        httpRequestManager.sendAccountsDeleteRequest(LoginNadzornik.getInstance().jwtToken, odabraniRed);
+                        kripterPodataka.izbrisiPodatke(odabraniRed, korIme);
                     } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                        JOptionPane.showMessageDialog(PrikazSifri.this, "Greška prilikom brisanja!");
                     }
+
                     DefaultTableModel model = (DefaultTableModel) tabLozinke.getModel();
                     model.removeRow(odabraniRed);
                 }else {
@@ -122,22 +131,42 @@ public class PrikazSifri extends JFrame {
     }
 
     public void prikazPodataka() throws Exception {
-        HttpRequestManager httpRequestManager = null;
-        httpRequestManager = new HttpRequestManager();
-        List<Account> racuni = httpRequestManager.sendAccountsRequest(LoginNadzornik.getInstance().jwtToken);
+        AccountService accountService = new AccountService();
+        VaultCryptoService cryptoService = new VaultCryptoService();
+        Gson gson = new Gson();
+
+        accounts.clear();
+        AccountResponse[] accounts = accountService.getAccounts();
+
         String[] stupci = {"Naziv", "Korisničko ime", "Lozinka", "Link"};
 
-        DefaultTableModel model = new DefaultTableModel(stupci, 0){
+        DefaultTableModel model = new DefaultTableModel(stupci, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(
+                    int row,
+                    int column
+            ) {
                 return false;
             }
         };
-        for (Account racun : racuni) {
-            Object[] red = {racun.getName(),racun.getUsername(),racun.getPassword(),racun.getUrl()};
-            model.addRow(red);
+
+        byte[] vaultKey = VaultSession.getVaultKey();
+
+        for (AccountResponse account : accounts) {
+
+            String json = cryptoService.decryptData(account.getEncryptedData(),
+                    account.getNonce(), account.getTag(), vaultKey);
+
+            Account newAccount = gson.fromJson(json, Account.class);
+
+            newAccount.Id = account.getId();
+            this.accounts.add(newAccount);
+
+            model.addRow((Vector<?>) this.accounts);
         }
+
         tabLozinke.setModel(model);
+
         tabLozinke.getColumnModel().getColumn(2).setMinWidth(0);
         tabLozinke.getColumnModel().getColumn(2).setMaxWidth(0);
     }

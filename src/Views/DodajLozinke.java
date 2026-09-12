@@ -1,11 +1,14 @@
-import me.gosimple.nbvcxz.resources.Generator;
+package Views;
+
+import Objects.Account;
+import Services.KripterPodataka;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
 
 public class DodajLozinke extends JFrame{
@@ -64,21 +67,11 @@ public class DodajLozinke extends JFrame{
 
 
                 if(ispravno) {
-                    HttpRequestManager httpRequestManager = null;
+                    KripterPodataka kripterPodataka = new KripterPodataka();
+                    Account account = new Account(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
                     try {
-                        httpRequestManager = new HttpRequestManager();
-                    } catch (MalformedURLException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
-                    try {
-                        int response = httpRequestManager.sendAccountsPostRequest(LoginNadzornik.getInstance().jwtToken, racun);
-                        if(response==200){
-                            JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
-                        }else{
-                            JOptionPane.showMessageDialog(DodajLozinke.this, "Greška pri dodavanju računa!");
-                        }
-
+                        kripterPodataka.spremiPodatke(account,korImeKorisnika,lozinkaKorisnika);
+                        JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
 
                         PrikazSifri prikazSifri= new PrikazSifri();
                         prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
@@ -108,7 +101,7 @@ public class DodajLozinke extends JFrame{
             }
         });
         btnGenerirajLozinku.addActionListener(e -> {
-            String lozinka = Generator.generatePassphrase("!-?", 5);
+            String lozinka = "Abac";
             txtLozinka.setText(lozinka);
         });
     }

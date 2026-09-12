@@ -1,3 +1,8 @@
+package Views;
+
+import Objects.Account;
+import Services.KripterPodataka;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -5,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
 
 public class UrediRacun extends JFrame {
@@ -19,7 +23,7 @@ public class UrediRacun extends JFrame {
     private JLabel lblNatrag;
     private String korImeKorisnika;
     private String lozinkaKorisnika;
-    private Racun racun;
+    private Account account;
     private int odabraniRed;
 
     public UrediRacun(){
@@ -66,20 +70,17 @@ public class UrediRacun extends JFrame {
 
 
                 if(ispravno) {
-                    HttpRequestManager httpRequestManager = null;
+                    KripterPodataka kripterPodataka = new KripterPodataka();
                     try {
-                        httpRequestManager = new HttpRequestManager();
-                    } catch (MalformedURLException ex) {
-                        throw new RuntimeException(ex);
+                        kripterPodataka.izbrisiPodatke(odabraniRed, korImeKorisnika);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(UrediRacun.this, "Greška prilikom uređivanja!");
                     }
-                    Racun racun = new Racun(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
+
+                    Account newAccount = new Account(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
                     try {
-                        int response = httpRequestManager.sendAccountsPutRequest(LoginNadzornik.getInstance().jwtToken, racun);
-                        if(response==200){
-                            JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
-                        }else{
-                            JOptionPane.showMessageDialog(UrediRacun.this, "Greška pri uređivanju računa!");
-                        }
+                        kripterPodataka.spremiPodatke(newAccount,korImeKorisnika,lozinkaKorisnika);
+                        JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
 
                         PrikazSifri prikazSifri= new PrikazSifri();
                         prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
@@ -111,16 +112,16 @@ public class UrediRacun extends JFrame {
     }
 
     public void prikazPodataka() {
-        txtNaziv.setText(racun.Naziv);
-        txtKorIme.setText(racun.KorIme);
-        txtLink.setText(racun.Link);
-        txtLozinka.setText(racun.Lozinka);
+        txtNaziv.setText(account.Naziv);
+        txtKorIme.setText(account.KorIme);
+        txtLink.setText(account.Link);
+        txtLozinka.setText(account.Lozinka);
     }
 
-    public void podaci(String korIme, String lozinka, Racun racun, int odabraniRed) {
+    public void podaci(String korIme, String lozinka, Account account, int odabraniRed) {
         this.korImeKorisnika = korIme;
         this.lozinkaKorisnika = lozinka;
-        this.racun = racun;
+        this.account = account;
         this.odabraniRed = odabraniRed;
     }
 }
