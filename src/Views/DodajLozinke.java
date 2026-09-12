@@ -11,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Arrays;
 
 public class DodajLozinke extends JFrame {
@@ -26,7 +28,17 @@ public class DodajLozinke extends JFrame {
     public DodajLozinke() {
 
         setTitle("Passwordium");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+
+                VaultSession.lock();
+
+                dispose();
+                System.exit(0);
+            }
+        });
 
         setContentPane(panDodaj);
 

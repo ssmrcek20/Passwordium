@@ -77,4 +77,23 @@ public class UserService {
             );
         }
     }
+
+    public void logout() throws Exception {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(API_URL + "/Logout"))
+                        .header("Authorization", "Bearer " + VaultSession.getJwt())
+                        .POST(HttpRequest.BodyPublishers.noBody())
+                        .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+
+            throw new Exception(
+                    "Logout nije uspio. Status: "
+                            + response.statusCode()
+            );
+        }
+    }
 }

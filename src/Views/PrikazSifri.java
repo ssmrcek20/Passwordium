@@ -3,6 +3,7 @@ package Views;
 import Objects.Account;
 import Responses.AccountResponse;
 import Services.AccountService;
+import Services.UserService;
 import Services.VaultCryptoService;
 import Services.VaultSession;
 import com.google.gson.Gson;
@@ -11,11 +12,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class PrikazSifri extends JFrame {
     private JPanel panSifre;
@@ -25,17 +24,50 @@ public class PrikazSifri extends JFrame {
     private JButton btnUkloniLozinku;
     private JScrollPane scrollPan;
     private JButton btn2FAPostavke;
+    private JButton btnLogout;
     private final java.util.List<Account> accounts = new java.util.ArrayList<>();
 
     public PrikazSifri(){
         setTitle("Passwordium");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+
+                VaultSession.lock();
+
+                dispose();
+                System.exit(0);
+            }
+        });
         setContentPane(panSifre);
 
         setSize(1080, 720);
         setLocationRelativeTo(null);
 
         setVisible(true);
+
+        btnLogout.setBorderPainted(false);
+        btnLogout.setBackground(new Color(200,200,200));
+        btnLogout.setFocusPainted(false);
+        btnLogout.addActionListener(e -> {
+
+            try {
+                UserService userService = new UserService();
+
+                userService.logout();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+
+                VaultSession.lock();
+
+                new Prijava();
+
+                PrikazSifri.this.dispose();
+            }
+        });
 
         btn2FAPostavke.setBorderPainted(false);
         btn2FAPostavke.setBackground(new Color(200,200,200));
@@ -126,7 +158,7 @@ public class PrikazSifri extends JFrame {
 
                 Timer timer = new Timer(15000, event -> {
                     try {
-                        Object trenutniSadrzaj = clipboard.getData(java.awt.datatransfer.DataFlavor.stringFlavor);
+                        Object trenutniSadrzaj = clipboard.getData(DataFlavor.stringFlavor);
 
                         if (kopiranaLozinka.equals(trenutniSadrzaj)) {
                             clipboard.setContents(new StringSelection(""), null);
