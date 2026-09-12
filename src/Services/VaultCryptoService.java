@@ -122,4 +122,31 @@ public class VaultCryptoService {
 
         return new String(plaintext, StandardCharsets.UTF_8);
     }
+
+    public EncryptedVaultKey encryptData(String data, byte[] vaultKey) throws Exception {
+        byte[] nonce = new byte[NONCE_SIZE];
+        secureRandom.nextBytes(nonce);
+
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        SecretKeySpec secretKey = new SecretKeySpec(vaultKey, "AES");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(128, nonce);
+
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
+
+        byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
+        byte[] encryptedWithTag = cipher.doFinal(plaintext);
+
+        int tagLength = 16;
+        int ciphertextLength = encryptedWithTag.length - tagLength;
+
+        byte[] ciphertext = new byte[ciphertextLength];
+        byte[] tag = new byte[tagLength];
+
+        System.arraycopy(encryptedWithTag, 0, ciphertext, 0, ciphertextLength);
+        System.arraycopy(encryptedWithTag, ciphertextLength, tag, 0, tagLength);
+
+        return new EncryptedVaultKey(Base64.getEncoder().encodeToString(ciphertext),
+                Base64.getEncoder().encodeToString(nonce),
+                Base64.getEncoder().encodeToString(tag));
+    }
 }

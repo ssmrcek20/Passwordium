@@ -3,7 +3,6 @@ package Views;
 import Objects.Account;
 import Responses.AccountResponse;
 import Services.AccountService;
-import Services.KripterPodataka;
 import Services.VaultCryptoService;
 import Services.VaultSession;
 import com.google.gson.Gson;
@@ -17,10 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.Vector;
-
-import static java.awt.Color.red;
 
 public class PrikazSifri extends JFrame {
     private JPanel panSifre;
@@ -30,24 +25,23 @@ public class PrikazSifri extends JFrame {
     private JButton btnUkloniLozinku;
     private JScrollPane scrollPan;
     private JButton btn2FAPostavke;
-    private String korIme;
-    private String lozinka;
     private final java.util.List<Account> accounts = new java.util.ArrayList<>();
 
     public PrikazSifri(){
         setTitle("Passwordium");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1080,720);
-        setLocationRelativeTo(null);
-        setVisible(true);
         setContentPane(panSifre);
+
+        setSize(1080, 720);
+        setLocationRelativeTo(null);
+
+        setVisible(true);
 
         btn2FAPostavke.setBorderPainted(false);
         btn2FAPostavke.setBackground(new Color(200,200,200));
         btn2FAPostavke.setFocusPainted(false);
 
         btn2FAPostavke.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 TwoFAPostavke FApostavke = new TwoFAPostavke();
                 PrikazSifri.this.dispose();
@@ -58,10 +52,8 @@ public class PrikazSifri extends JFrame {
         btnDodajLozinku.setBackground(new Color(200,200,200));
         btnDodajLozinku.setFocusPainted(false);
         btnDodajLozinku.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 DodajLozinke dodajLozinke = new DodajLozinke();
-                dodajLozinke.podaci(korIme, lozinka);
                 PrikazSifri.this.dispose();
             }
         });
@@ -70,22 +62,16 @@ public class PrikazSifri extends JFrame {
         btnUrediLozinku.setBackground(new Color(200,200,200));
         btnUrediLozinku.setFocusPainted(false);
         btnUrediLozinku.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 int odabraniRed = tabLozinke.getSelectedRow();
-                if(odabraniRed != -1){
-                    Account account = new Account(
-                            tabLozinke.getValueAt(odabraniRed,0).toString(),
-                            tabLozinke.getValueAt(odabraniRed,1).toString(),
-                            tabLozinke.getValueAt(odabraniRed,2).toString()
-                    );
-                    if(tabLozinke.getValueAt(odabraniRed,3) != null){
-                        account.Link = tabLozinke.getValueAt(odabraniRed,3).toString();
-                    }
+                if (odabraniRed != -1) {
+
+                    Account account = accounts.get(odabraniRed);
 
                     UrediRacun urediRacun = new UrediRacun();
-                    urediRacun.podaci(korIme, lozinka, account, odabraniRed);
+                    urediRacun.podaci(account);
                     urediRacun.prikazPodataka();
+
                     PrikazSifri.this.dispose();
                 }else {
                     JOptionPane.showMessageDialog(PrikazSifri.this, "Odaberi red za uređivanje!");
@@ -96,23 +82,30 @@ public class PrikazSifri extends JFrame {
         btnUkloniLozinku.setBorderPainted(false);
         btnUkloniLozinku.setBackground(new Color(200,200,200));
         btnUkloniLozinku.setFocusPainted(false);
-        btnUkloniLozinku.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int odabraniRed = tabLozinke.getSelectedRow();
-                if(odabraniRed != -1){
-                    KripterPodataka kripterPodataka = new KripterPodataka();
-                    try {
-                        kripterPodataka.izbrisiPodatke(odabraniRed, korIme);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(PrikazSifri.this, "Greška prilikom brisanja!");
-                    }
+        btnUkloniLozinku.addActionListener(e -> {
 
-                    DefaultTableModel model = (DefaultTableModel) tabLozinke.getModel();
-                    model.removeRow(odabraniRed);
-                }else {
-                    JOptionPane.showMessageDialog(PrikazSifri.this, "Odaberi red za brisanje!");
-                }
+            int odabraniRed = tabLozinke.getSelectedRow();
+
+            if (odabraniRed == -1) {
+                JOptionPane.showMessageDialog(PrikazSifri.this, "Odaberi red za brisanje!");
+                return;
+            }
+
+            Account account = accounts.get(odabraniRed);
+
+            try {
+                AccountService accountService = new AccountService();
+
+                accountService.deleteAccount(account.Id);
+
+                accounts.remove(odabraniRed);
+
+                DefaultTableModel model = (DefaultTableModel) tabLozinke.getModel();
+
+                model.removeRow(odabraniRed);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(PrikazSifri.this, "Greška prilikom brisanja!");
             }
         });
 
@@ -122,57 +115,86 @@ public class PrikazSifri extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int red = tabLozinke.rowAtPoint(e.getPoint());
-                String lozinkaRacuna = (String) tabLozinke.getValueAt(red, 2);
-                StringSelection selection = new StringSelection(lozinkaRacuna);
+                if (red < 0 || red >= accounts.size()) {
+                    return;
+                }
+
+                String kopiranaLozinka = accounts.get(red).Lozinka;
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, selection);
+                StringSelection selection = new StringSelection(kopiranaLozinka);
+                clipboard.setContents(selection, null);
+
+                Timer timer = new Timer(15000, event -> {
+                    try {
+                        Object trenutniSadrzaj = clipboard.getData(java.awt.datatransfer.DataFlavor.stringFlavor);
+
+                        if (kopiranaLozinka.equals(trenutniSadrzaj)) {
+                            clipboard.setContents(new StringSelection(""), null);
+                        }
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+                timer.setRepeats(false);
+                timer.start();
             }
         });
     }
 
     public void prikazPodataka() throws Exception {
+
         AccountService accountService = new AccountService();
+
         VaultCryptoService cryptoService = new VaultCryptoService();
+
         Gson gson = new Gson();
 
         accounts.clear();
-        AccountResponse[] accounts = accountService.getAccounts();
 
-        String[] stupci = {"Naziv", "Korisničko ime", "Lozinka", "Link"};
+        AccountResponse[] accountResponses = accountService.getAccounts();
+
+        String[] stupci = {
+                "Naziv",
+                "Korisničko ime",
+                "Lozinka",
+                "Link"
+        };
 
         DefaultTableModel model = new DefaultTableModel(stupci, 0) {
             @Override
-            public boolean isCellEditable(
-                    int row,
-                    int column
-            ) {
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
         byte[] vaultKey = VaultSession.getVaultKey();
 
-        for (AccountResponse account : accounts) {
+        for (AccountResponse accountResponse : accountResponses) {
 
-            String json = cryptoService.decryptData(account.getEncryptedData(),
-                    account.getNonce(), account.getTag(), vaultKey);
+            String json = cryptoService.decryptData(accountResponse.getEncryptedData(),
+                    accountResponse.getNonce(), accountResponse.getTag(), vaultKey);
 
             Account newAccount = gson.fromJson(json, Account.class);
 
-            newAccount.Id = account.getId();
-            this.accounts.add(newAccount);
+            newAccount.Id = accountResponse.getId();
 
-            model.addRow((Vector<?>) this.accounts);
+            accounts.add(newAccount);
+
+            Object[] red = {
+                    newAccount.Naziv,
+                    newAccount.KorIme,
+                    newAccount.Lozinka,
+                    newAccount.Link
+            };
+
+            model.addRow(red);
         }
 
         tabLozinke.setModel(model);
-
         tabLozinke.getColumnModel().getColumn(2).setMinWidth(0);
         tabLozinke.getColumnModel().getColumn(2).setMaxWidth(0);
     }
 
-    public void podaci(String korIme, String lozinka) {
-        this.korIme = korIme;
-        this.lozinka = lozinka;
-    }
 }

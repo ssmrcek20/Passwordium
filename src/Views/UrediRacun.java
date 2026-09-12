@@ -1,16 +1,16 @@
 package Views;
 
 import Objects.Account;
-import Services.KripterPodataka;
+import Objects.EncryptedVaultKey;
+import Services.AccountService;
+import Services.VaultCryptoService;
+import Services.VaultSession;
+import com.google.gson.Gson;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 
 public class UrediRacun extends JFrame {
     private JTextField txtKorIme;
@@ -21,18 +21,15 @@ public class UrediRacun extends JFrame {
     private JButton btnUredi;
     private JPanel panUredi;
     private JLabel lblNatrag;
-    private String korImeKorisnika;
-    private String lozinkaKorisnika;
     private Account account;
-    private int odabraniRed;
 
     public UrediRacun(){
         setTitle("Passwordium");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1080,720);
+        setContentPane(panUredi);
+        setSize(1080, 720);
         setLocationRelativeTo(null);
         setVisible(true);
-        setContentPane(panUredi);
 
         btnGenerirajLozinku.setBorderPainted(false);
         btnGenerirajLozinku.setBackground(new Color(200,200,200));
@@ -41,66 +38,78 @@ public class UrediRacun extends JFrame {
         btnUredi.setBorderPainted(false);
         btnUredi.setBackground(new Color(200,200,200));
         btnUredi.setFocusPainted(false);
-        btnUredi.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean ispravno = true;
+        btnUredi.addActionListener(e -> {
 
-                if (txtNaziv.getText().equals("")) {
-                    txtNaziv.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtNaziv.setBackground(Color.white);
-                }
+            boolean ispravno = true;
 
-                if (txtKorIme.getText().equals("")) {
-                    txtKorIme.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtKorIme.setBackground(Color.white);
-                }
+            if (txtNaziv.getText().isBlank()) {
+                txtNaziv.setBackground(Color.red);
+                ispravno = false;
+            } else {
+                txtNaziv.setBackground(Color.white);
+            }
 
-                if (txtLozinka.getPassword().length == 0) {
-                    txtLozinka.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtLozinka.setBackground(Color.white);
-                }
+            if (txtKorIme.getText().isBlank()) {
+                txtKorIme.setBackground(Color.red);
+                ispravno = false;
+            } else {
+                txtKorIme.setBackground(Color.white);
+            }
 
+            if (txtLozinka.getPassword().length == 0) {
+                txtLozinka.setBackground(Color.red);
+                ispravno = false;
+            } else {
+                txtLozinka.setBackground(Color.white);
+            }
 
+            if (!ispravno) {
+                return;
+            }
 
-                if(ispravno) {
-                    KripterPodataka kripterPodataka = new KripterPodataka();
-                    try {
-                        kripterPodataka.izbrisiPodatke(odabraniRed, korImeKorisnika);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Greška prilikom uređivanja!");
-                    }
+            char[] passwordChars = txtLozinka.getPassword();
 
-                    Account newAccount = new Account(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
-                    try {
-                        kripterPodataka.spremiPodatke(newAccount,korImeKorisnika,lozinkaKorisnika);
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
+            try {
 
-                        PrikazSifri prikazSifri= new PrikazSifri();
-                        prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
-                        prikazSifri.prikazPodataka();
-                        UrediRacun.this.dispose();
+                account.Naziv = txtNaziv.getText();
+                account.KorIme = txtKorIme.getText();
+                account.Lozinka = new String(passwordChars);
+                account.Link = txtLink.getText();
 
-                    } catch (FileAlreadyExistsException ex){
-                        JOptionPane.showMessageDialog(UrediRacun.this,ex.getMessage());
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(UrediRacun.this, "Došlo je do greške tijekom uređivanja računa!");
-                    }
-                }
+                Gson gson = new Gson();
+
+                String json = gson.toJson(account);
+
+                VaultCryptoService cryptoService =
+                        new VaultCryptoService();
+
+                EncryptedVaultKey encryptedData = cryptoService.encryptData(json, VaultSession.getVaultKey());
+
+                AccountService accountService = new AccountService();
+                accountService.updateAccount(account.Id, encryptedData);
+
+                JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
+
+                PrikazSifri prikazSifri = new PrikazSifri();
+                prikazSifri.prikazPodataka();
+
+                UrediRacun.this.dispose();
+
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(UrediRacun.this, "Došlo je do greške tijekom uređivanja računa!");
+
+            } finally {
+                java.util.Arrays.fill(passwordChars, '\0');
             }
         });
+
         lblNatrag.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 PrikazSifri prikazSifri= new PrikazSifri();
-                prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
                 try {
                     prikazSifri.prikazPodataka();
                 } catch (Exception ex) {
@@ -118,10 +127,7 @@ public class UrediRacun extends JFrame {
         txtLozinka.setText(account.Lozinka);
     }
 
-    public void podaci(String korIme, String lozinka, Account account, int odabraniRed) {
-        this.korImeKorisnika = korIme;
-        this.lozinkaKorisnika = lozinka;
+    public void podaci(Account account) {
         this.account = account;
-        this.odabraniRed = odabraniRed;
     }
 }

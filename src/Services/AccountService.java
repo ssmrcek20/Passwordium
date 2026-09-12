@@ -1,5 +1,7 @@
 package Services;
 
+import Objects.EncryptedVaultKey;
+import Requests.AccountRequest;
 import Responses.AccountResponse;
 import com.google.gson.Gson;
 
@@ -35,5 +37,66 @@ public class AccountService {
         }
 
         return gson.fromJson(response.body(), AccountResponse[].class);
+    }
+
+    public void deleteAccount(int id) throws Exception {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(API_URL + "/" + id))
+                .header("Authorization", "Bearer " + VaultSession.getJwt())
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new Exception("Brisanje računa nije uspjelo. Status: " + response.statusCode() + " " + response.body());
+        }
+    }
+
+    public void updateAccount(int id, EncryptedVaultKey encryptedData) throws Exception {
+
+        AccountRequest requestBody = new AccountRequest(
+                id,
+                encryptedData.getEncryptedVaultKey(),
+                encryptedData.getNonce(),
+                encryptedData.getTag()
+        );
+
+        String json = gson.toJson(requestBody);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(API_URL))
+                        .header("Authorization", "Bearer " + VaultSession.getJwt())
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(json))
+                        .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new Exception("Uređivanje računa nije uspjelo. Status: " + response.statusCode());
+        }
+    }
+
+    public void addAccount(EncryptedVaultKey encryptedData) throws Exception {
+        AccountRequest requestBody = new AccountRequest(0, encryptedData.getEncryptedVaultKey(),
+                encryptedData.getNonce(), encryptedData.getTag());
+
+        String json = gson.toJson(requestBody);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(API_URL))
+                        .header("Authorization", "Bearer " + VaultSession.getJwt())
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(json))
+                        .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new Exception(
+                    "Dodavanje računa nije uspjelo. Status: " + response.statusCode() + " " + response.body());
+        }
     }
 }

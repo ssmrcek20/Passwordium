@@ -1,17 +1,19 @@
 package Views;
 
 import Objects.Account;
-import Services.KripterPodataka;
+import Objects.EncryptedVaultKey;
+import Services.AccountService;
+import Services.VaultCryptoService;
+import Services.VaultSession;
+import com.google.gson.Gson;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.nio.file.FileAlreadyExistsException;
+import java.util.Arrays;
 
-public class DodajLozinke extends JFrame{
+public class DodajLozinke extends JFrame {
     private JPanel panDodaj;
     private JTextField txtKorIme;
     private JPasswordField txtLozinka;
@@ -20,94 +22,113 @@ public class DodajLozinke extends JFrame{
     private JButton btnGenerirajLozinku;
     private JButton btnDodaj;
     private JLabel lblNatrag;
-    private String korImeKorisnika;
-    private String lozinkaKorisnika;
 
-    public DodajLozinke(){
+    public DodajLozinke() {
+
         setTitle("Passwordium");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1080,720);
-        setLocationRelativeTo(null);
-        setVisible(true);
+
         setContentPane(panDodaj);
 
+        setSize(1080, 720);
+        setLocationRelativeTo(null);
+
         btnGenerirajLozinku.setBorderPainted(false);
-        btnGenerirajLozinku.setBackground(new Color(200,200,200));
+        btnGenerirajLozinku.setBackground(new Color(200, 200, 200));
         btnGenerirajLozinku.setFocusPainted(false);
 
         btnDodaj.setBorderPainted(false);
-        btnDodaj.setBackground(new Color(200,200,200));
+        btnDodaj.setBackground(new Color(200, 200, 200));
         btnDodaj.setFocusPainted(false);
-        btnDodaj.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean ispravno = true;
 
-                if (txtNaziv.getText().equals("")) {
-                    txtNaziv.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtNaziv.setBackground(Color.white);
-                }
+        btnDodaj.addActionListener(e -> {
 
-                if (txtKorIme.getText().equals("")) {
-                    txtKorIme.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtKorIme.setBackground(Color.white);
-                }
+            if (!provjeriUnos()) {
+                return;
+            }
 
-                if (txtLozinka.getPassword().length == 0) {
-                    txtLozinka.setBackground(Color.red);
-                    ispravno = false;
-                } else {
-                    txtLozinka.setBackground(Color.white);
-                }
+            char[] passwordChars =
+                    txtLozinka.getPassword();
 
+            try {
 
+                Account account = new Account(txtNaziv.getText(), txtKorIme.getText(), new String(passwordChars), txtLink.getText());
 
-                if(ispravno) {
-                    KripterPodataka kripterPodataka = new KripterPodataka();
-                    Account account = new Account(txtNaziv.getText(),txtKorIme.getText(),new String(txtLozinka.getPassword()),txtLink.getText());
-                    try {
-                        kripterPodataka.spremiPodatke(account,korImeKorisnika,lozinkaKorisnika);
-                        JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
+                Gson gson = new Gson();
+                String json = gson.toJson(account);
+                VaultCryptoService cryptoService = new VaultCryptoService();
+                EncryptedVaultKey encryptedData = cryptoService.encryptData(json, VaultSession.getVaultKey());
+                AccountService accountService = new AccountService();
+                accountService.addAccount(encryptedData);
 
-                        PrikazSifri prikazSifri= new PrikazSifri();
-                        prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
-                        prikazSifri.prikazPodataka();
-                        DodajLozinke.this.dispose();
+                JOptionPane.showMessageDialog(DodajLozinke.this, "Uspješno dodavanje računa!");
 
-                    } catch (FileAlreadyExistsException ex){
-                        JOptionPane.showMessageDialog(DodajLozinke.this,ex.getMessage());
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(DodajLozinke.this, "Došlo je do greške tijekom spremanja novog računa!");
+                PrikazSifri prikazSifri = new PrikazSifri();
+                prikazSifri.prikazPodataka();
+                DodajLozinke.this.dispose();
+
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(
+                        DodajLozinke.this,
+                        "Došlo je do greške tijekom spremanja novog računa!"
+                );
+
+            } finally {
+                Arrays.fill(passwordChars, '\0');
+            }
+        });
+
+        lblNatrag.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+
+                        try {
+                            PrikazSifri prikazSifri = new PrikazSifri();
+                            prikazSifri.prikazPodataka();
+                            DodajLozinke.this.dispose();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(DodajLozinke.this, "Greška prilikom učitavanja računa!");
+                        }
                     }
                 }
-            }
-        });
-        lblNatrag.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                PrikazSifri prikazSifri= new PrikazSifri();
-                prikazSifri.podaci(korImeKorisnika, lozinkaKorisnika);
-                try {
-                    prikazSifri.prikazPodataka();
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-                DodajLozinke.this.dispose();
-            }
-        });
+        );
+
         btnGenerirajLozinku.addActionListener(e -> {
             String lozinka = "Abac";
             txtLozinka.setText(lozinka);
         });
+
+        setVisible(true);
     }
 
-    public void podaci(String korIme, String lozinka) {
-        this.korImeKorisnika = korIme;
-        this.lozinkaKorisnika = lozinka;
+    private boolean provjeriUnos() {
+
+        boolean ispravno = true;
+
+        if (txtNaziv.getText().isBlank()) {
+            txtNaziv.setBackground(Color.red);
+            ispravno = false;
+        } else {
+            txtNaziv.setBackground(Color.white);
+        }
+
+        if (txtKorIme.getText().isBlank()) {
+            txtKorIme.setBackground(Color.red);
+            ispravno = false;
+        } else {
+            txtKorIme.setBackground(Color.white);
+        }
+
+        if (txtLozinka.getPassword().length == 0) {
+            txtLozinka.setBackground(Color.red);
+            ispravno = false;
+        } else {
+            txtLozinka.setBackground(Color.white);
+        }
+
+        return ispravno;
     }
 }
