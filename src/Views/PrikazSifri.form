@@ -1,56 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Views.PrikazSifri">
-  <grid id="27dc6" binding="panSifre" layout-manager="GridLayoutManager" row-count="5" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="40" left="40" bottom="40" right="40"/>
+  <grid id="27dc6" binding="panSifre" layout-manager="GridLayoutManager" row-count="6" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="10" vgap="10">
+    <margin top="30" left="30" bottom="30" right="30"/>
     <constraints>
-      <xy x="20" y="20" width="592" height="400"/>
+      <xy x="20" y="20" width="1100" height="700"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <component id="bb757" class="javax.swing.JButton" binding="btnDodajLozinku">
+      <component id="naslov" class="javax.swing.JLabel" binding="lblNaslov">
         <constraints>
-          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <maximum-size width="200" height="-1"/>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="24" style="1"/>
+          <text value="Moje vjerodajnice"/>
+        </properties>
+      </component>
+
+      <component id="pretraga" class="javax.swing.JTextField" binding="txtPretraga">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="300" height="36"/>
           </grid>
         </constraints>
         <properties>
           <font size="16"/>
-          <text value="Dodaj"/>
+          <toolTipText value="Pretraži vjerodajnice"/>
         </properties>
       </component>
-      <component id="1ee93" class="javax.swing.JButton" binding="btnUrediLozinku">
+
+      <component id="logout" class="javax.swing.JButton" binding="btnLogout">
         <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <maximum-size width="200" height="-1"/>
+          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <maximum-size width="160" height="40"/>
           </grid>
         </constraints>
         <properties>
-          <font size="18"/>
-          <text value="Uredi"/>
+          <font size="16"/>
+          <text value="Odjava"/>
         </properties>
       </component>
-      <component id="8693a" class="javax.swing.JButton" binding="btnUkloniLozinku">
+
+      <component id="kategorijeNaslov" class="javax.swing.JLabel" binding="lblKategorije">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <maximum-size width="200" height="-1"/>
-          </grid>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <font size="18"/>
-          <text value="Izbriši"/>
+          <font size="16" style="1"/>
+          <text value="Kategorije"/>
         </properties>
       </component>
-      <vspacer id="90ed5">
+
+      <component id="uputa" class="javax.swing.JLabel" binding="lblUputa">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
-            <preferred-size width="-1" height="20"/>
+          <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="14"/>
+          <text value="Odaberite red da biste kopirali lozinku za željeni račun!"/>
+        </properties>
+      </component>
+
+      <component id="brojZapisa" class="javax.swing.JLabel" binding="lblBrojZapisa">
+        <constraints>
+          <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="14"/>
+          <text value="0 zapisa"/>
+        </properties>
+      </component>
+
+      <scrollpane id="kategorijeScroll">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="180" height="-1"/>
+            <maximum-size width="230" height="-1"/>
           </grid>
         </constraints>
-      </vspacer>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="listaKategorija" class="javax.swing.JList" binding="listKategorije">
+            <constraints/>
+            <properties>
+              <font size="16"/>
+              <model/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+
       <scrollpane id="8380e" binding="scrollPan">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -60,26 +104,81 @@
             <properties>
               <autoResizeMode value="2"/>
               <enabled value="true"/>
-              <fillsViewportHeight value="false"/>
-              <font size="18"/>
-              <intercellSpacing width="10" height="-1"/>
+              <fillsViewportHeight value="true"/>
+              <font size="16"/>
+              <intercellSpacing width="8" height="4"/>
+              <rowHeight value="32"/>
             </properties>
           </component>
         </children>
       </scrollpane>
-      <component id="d31af" class="javax.swing.JLabel">
+
+      <vspacer id="90ed5">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="5" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="12"/>
+          </grid>
+        </constraints>
+      </vspacer>
+
+      <component id="promjeniKategoriju" class="javax.swing.JButton" binding="btnPromjeniKategoriju">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <maximum-size width="220" height="40"/>
+          </grid>
         </constraints>
         <properties>
-          <font size="14"/>
-          <text value="Odaberite red da biste kopirali lozinku za željeni račun!"/>
+          <font size="16"/>
+          <text value="Promijeni kategoriju"/>
         </properties>
       </component>
-      <component id="6dcab" class="javax.swing.JButton" binding="btn2FAPostavke">
+
+      <component id="izbrisi" class="javax.swing.JButton" binding="btnUkloniLozinku">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <maximum-size width="200" height="-1"/>
+            <maximum-size width="180" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="16"/>
+          <text value="Izbriši"/>
+        </properties>
+      </component>
+
+      <hspacer id="akcijeSpacer">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+
+      <component id="uredi" class="javax.swing.JButton" binding="btnUrediLozinku">
+        <constraints>
+          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <maximum-size width="180" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="16"/>
+          <text value="Uredi"/>
+        </properties>
+      </component>
+
+      <component id="dodaj" class="javax.swing.JButton" binding="btnDodajLozinku">
+        <constraints>
+          <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <maximum-size width="180" height="40"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="16"/>
+          <text value="Dodaj"/>
+        </properties>
+      </component>
+
+      <component id="twofa" class="javax.swing.JButton" binding="btn2FAPostavke">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <maximum-size width="180" height="40"/>
           </grid>
         </constraints>
         <properties>
@@ -87,17 +186,12 @@
           <text value="2FA postavke"/>
         </properties>
       </component>
-      <component id="95381" class="javax.swing.JButton" binding="btnLogout">
+
+      <hspacer id="bottomSpacer">
         <constraints>
-          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <maximum-size width="200" height="-1"/>
-          </grid>
+          <grid row="5" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <font size="16"/>
-          <text value="Odjava"/>
-        </properties>
-      </component>
+      </hspacer>
     </children>
   </grid>
 </form>

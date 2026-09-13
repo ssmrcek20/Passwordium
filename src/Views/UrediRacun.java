@@ -3,6 +3,7 @@ package Views;
 import Objects.Account;
 import Objects.EncryptedVaultKey;
 import Services.AccountService;
+import Services.AutoLockService;
 import Services.VaultCryptoService;
 import Services.VaultSession;
 import com.google.gson.Gson;
@@ -31,7 +32,7 @@ public class UrediRacun extends JFrame {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-
+                AutoLockService.stop();
                 VaultSession.lock();
 
                 dispose();
@@ -83,13 +84,12 @@ public class UrediRacun extends JFrame {
 
             try {
 
-                account.Naziv = txtNaziv.getText();
-                account.KorIme = txtKorIme.getText();
-                account.Lozinka = new String(passwordChars);
-                account.Link = txtLink.getText();
+                account.setName(txtNaziv.getText());
+                account.setUsername(txtKorIme.getText());
+                account.setPassword(new String(passwordChars));
+                account.setLink(txtLink.getText());
 
                 Gson gson = new Gson();
-
                 String json = gson.toJson(account);
 
                 VaultCryptoService cryptoService =
@@ -98,7 +98,7 @@ public class UrediRacun extends JFrame {
                 EncryptedVaultKey encryptedData = cryptoService.encryptData(json, VaultSession.getVaultKey());
 
                 AccountService accountService = new AccountService();
-                accountService.updateAccount(account.Id, encryptedData);
+                accountService.updateAccount(account.getId(), encryptedData);
 
                 JOptionPane.showMessageDialog(UrediRacun.this, "Uspješno uređivanje računa!");
 
@@ -133,10 +133,10 @@ public class UrediRacun extends JFrame {
     }
 
     public void prikazPodataka() {
-        txtNaziv.setText(account.Naziv);
-        txtKorIme.setText(account.KorIme);
-        txtLink.setText(account.Link);
-        txtLozinka.setText(account.Lozinka);
+        txtNaziv.setText(account.getName());
+        txtKorIme.setText(account.getUsername());
+        txtLink.setText(account.getLink());
+        txtLozinka.setText(account.getPassword());
     }
 
     public void podaci(Account account) {

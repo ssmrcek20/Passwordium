@@ -1,16 +1,12 @@
 package Views;
 
 import Responses.LoginResponse;
+import Services.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import Services.LoginSurveyer;
-import Services.UserService;
-import Services.VaultCryptoService;
-import Services.VaultSession;
 
 public class Prijava extends JFrame {
     private JPanel panPrijava;
@@ -54,6 +50,7 @@ public class Prijava extends JFrame {
                     VaultSession.unlock(vaultKey, response.getJwt());
                     JOptionPane.showMessageDialog(Prijava.this, "Uspješna prijava!");
                     PrikazSifri prikazSifri = new PrikazSifri();
+                    AutoLockService.start();
                     prikazSifri.setVisible(true);
                     Prijava.this.dispose();
                 } catch (Exception ex) {

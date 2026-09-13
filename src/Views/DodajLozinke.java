@@ -2,9 +2,7 @@ package Views;
 
 import Objects.Account;
 import Objects.EncryptedVaultKey;
-import Services.AccountService;
-import Services.VaultCryptoService;
-import Services.VaultSession;
+import Services.*;
 import com.google.gson.Gson;
 
 import javax.swing.*;
@@ -24,6 +22,8 @@ public class DodajLozinke extends JFrame {
     private JButton btnGenerirajLozinku;
     private JButton btnDodaj;
     private JLabel lblNatrag;
+    private JComboBox<String> cmbKategorija;
+    private JButton btnNovaKategorija;
 
     public DodajLozinke() {
 
@@ -32,7 +32,7 @@ public class DodajLozinke extends JFrame {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-
+                AutoLockService.stop();
                 VaultSession.lock();
 
                 dispose();
@@ -45,9 +45,46 @@ public class DodajLozinke extends JFrame {
         setSize(1080, 720);
         setLocationRelativeTo(null);
 
+        cmbKategorija.setModel(new DefaultComboBoxModel<>(CategoryService.List));
+
         btnGenerirajLozinku.setBorderPainted(false);
         btnGenerirajLozinku.setBackground(new Color(200, 200, 200));
         btnGenerirajLozinku.setFocusPainted(false);
+
+        btnGenerirajLozinku.addActionListener(e -> {
+            JSpinner spinnerLength = new JSpinner(new SpinnerNumberModel(16, 4, 128, 1));
+            JCheckBox chkLowercase = new JCheckBox("Mala slova", true);
+            JCheckBox chkUppercase = new JCheckBox("Velika slova", true);
+            JCheckBox chkNumbers = new JCheckBox("Brojevi", true);
+            JCheckBox chkSpecial = new JCheckBox("Posebni znakovi", true);
+            JPanel panel = new JPanel();
+
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.add(new JLabel("Duljina lozinke:"));
+            panel.add(spinnerLength);
+            panel.add(chkLowercase);
+            panel.add(chkUppercase);
+            panel.add(chkNumbers);
+            panel.add(chkSpecial);
+
+            int result = JOptionPane.showConfirmDialog(DodajLozinke.this, panel,
+                    "Generator lozinke", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    PasswordGeneratorService generator = new PasswordGeneratorService();
+
+                    String password = generator.generatePassword((Integer) spinnerLength.getValue(),
+                            chkLowercase.isSelected(), chkUppercase.isSelected(), chkNumbers.isSelected(),
+                            chkSpecial.isSelected());
+
+                    txtLozinka.setText(password);
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(DodajLozinke.this, ex.getMessage());
+                }
+            }
+        });
 
         btnDodaj.setBorderPainted(false);
         btnDodaj.setBackground(new Color(200, 200, 200));
@@ -64,7 +101,7 @@ public class DodajLozinke extends JFrame {
 
             try {
 
-                Account account = new Account(txtNaziv.getText(), txtKorIme.getText(), new String(passwordChars), txtLink.getText());
+                Account account = new Account(txtNaziv.getText(), txtKorIme.getText(), new String(passwordChars), txtLink.getText(), (String) cmbKategorija.getSelectedItem());
 
                 Gson gson = new Gson();
                 String json = gson.toJson(account);
@@ -108,9 +145,37 @@ public class DodajLozinke extends JFrame {
                 }
         );
 
-        btnGenerirajLozinku.addActionListener(e -> {
-            String lozinka = "Abac";
-            txtLozinka.setText(lozinka);
+        btnNovaKategorija.addActionListener(e -> {
+            String novaKategorija = JOptionPane.showInputDialog(this, "Unesite naziv nove kategorije:");
+
+            if (novaKategorija == null) {
+                return;
+            }
+
+            novaKategorija = novaKategorija.trim();
+
+            if (novaKategorija.isEmpty()) {JOptionPane.showMessageDialog(this, "Naziv kategorije ne smije biti prazan.");
+                return;
+            }
+
+            ComboBoxModel<String> model = cmbKategorija.getModel();
+
+            boolean postoji = false;
+
+            for (int i = 0; i < model.getSize(); i++) {
+                if (novaKategorija.equalsIgnoreCase(
+                        model.getElementAt(i))) {
+
+                    postoji = true;
+                    break;
+                }
+            }
+
+            if (!postoji) {
+                cmbKategorija.addItem(novaKategorija);
+            }
+
+            cmbKategorija.setSelectedItem(novaKategorija);
         });
 
         setVisible(true);
@@ -143,4 +208,6 @@ public class DodajLozinke extends JFrame {
 
         return ispravno;
     }
+
+
 }

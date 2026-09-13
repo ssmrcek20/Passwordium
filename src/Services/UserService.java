@@ -81,7 +81,7 @@ public class UserService {
     public void logout() throws Exception {
 
         HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(API_URL + "/Logout"))
+                        .uri(URI.create(API_URL + "Logout"))
                         .header("Authorization", "Bearer " + VaultSession.getJwt())
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();

@@ -1,5 +1,6 @@
 package Views;
 
+import Services.AutoLockService;
 import Services.VaultSession;
 
 import javax.swing.*;
@@ -24,7 +25,7 @@ public class TwoFAPostavke extends JFrame{
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-
+                AutoLockService.stop();
                 VaultSession.lock();
 
                 dispose();

@@ -1,63 +1,55 @@
 package Objects;
 
-public class Account {
-    public int Id;
+import com.google.gson.annotations.SerializedName;
 
-    public int getId() {
-        return Id;
+public class Account extends VaultItem {
+    @SerializedName(value = "username", alternate = {"Username"})
+    private String username;
+
+    @SerializedName(value = "password", alternate = {"Password"})
+    private String password;
+
+    @SerializedName(value = "link", alternate = {"Link"})
+    private String link;
+
+    public Account() {
+        super();
+        setType("CREDENTIAL");
     }
 
-    public void setId(int id) {
-        Id = id;
+    public Account(String name, String username, String password, String link, String category) {
+        super(name, category, "CREDENTIAL");
+
+        this.username = username;
+        this.password = password;
+        this.link = link;
     }
 
-    public String getNaziv() {
-        return Naziv;
+    public Account(String name, String username, String password, String category) {
+        this(name, username, password, null, category);
     }
 
-    public void setNaziv(String naziv) {
-        Naziv = naziv;
+    public String getUsername() {
+        return username;
     }
 
-    public String getKorIme() {
-        return KorIme;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setKorIme(String korIme) {
-        KorIme = korIme;
+    public String getPassword() {
+        return password;
     }
 
-    public String getLozinka() {
-        return Lozinka;
-    }
-
-    public void setLozinka(String lozinka) {
-        Lozinka = lozinka;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getLink() {
-        return Link;
+        return link;
     }
 
     public void setLink(String link) {
-        Link = link;
-    }
-
-    public String Naziv;
-    public String KorIme;
-    public String Lozinka;
-    public String Link;
-
-    public Account(String naziv, String korIme, String lozinka, String link) {
-        Naziv = naziv;
-        KorIme = korIme;
-        Lozinka = lozinka;
-        Link = link;
-    }
-
-    public Account(String naziv, String korIme, String lozinka){
-        Naziv = naziv;
-        KorIme = korIme;
-        Lozinka = lozinka;
+        this.link = link;
     }
 }
