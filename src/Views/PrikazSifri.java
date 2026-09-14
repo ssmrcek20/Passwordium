@@ -193,20 +193,29 @@ public class PrikazSifri extends JFrame {
         btnPromjeniKategoriju.addActionListener(e -> promijeniKategoriju());
 
         tabLozinke.addMouseListener(new MouseAdapter() {
-
             @Override
-            public void mouseClicked(MouseEvent e) {
-
+            public void mouseClicked(MouseEvent e){
                 int red = tabLozinke.rowAtPoint(e.getPoint());
-
                 if (red < 0 || red >= shownItems.size()) {
                     return;
                 }
 
                 VaultItem item = shownItems.get(red);
 
-                if (item instanceof Account account) {
-                    kopirajLozinku(account.getPassword());
+                if (item instanceof Account account && e.getClickCount() == 2) {
+
+                    kopirajOsjetljiviTekst(account.getPassword(), "Lozinka je kopirana.");
+                    return;
+                }
+
+                if (e.getClickCount() == 2) {
+                    if (item instanceof Card card) {
+                        prikaziKarticu(card);
+                    }
+
+                    else if (item instanceof SecureNote note) {
+                        prikaziBiljesku(note);
+                    }
                 }
             }
         });
@@ -272,26 +281,40 @@ public class PrikazSifri extends JFrame {
         }
     }
 
-    private void kopirajLozinku(String kopiranaLozinka) {
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(new StringSelection(kopiranaLozinka), null);
+    private void kopirajOsjetljiviTekst(String tekst, String poruka) {
+        if (tekst == null || tekst.isBlank()) {
+            return;
+        }
 
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        clipboard.setContents(new StringSelection(tekst), null);
+
+        JOptionPane.showMessageDialog(this, poruka + "\nMeđuspremnik će se očistiti nakon 15 sekundi.");
+
+        Timer timer = createTimer(tekst, clipboard);
+        timer.start();
+    }
+
+    private static Timer createTimer(String tekst, Clipboard clipboard) {
         Timer timer = new Timer(15000, event -> {
             try {
                 if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+
                     Object trenutniSadrzaj = clipboard.getData(DataFlavor.stringFlavor);
 
-                    if (kopiranaLozinka.equals(trenutniSadrzaj)) {
+                    if (tekst.equals(trenutniSadrzaj)) {
                         clipboard.setContents(new StringSelection(""), null);
                     }
                 }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
 
         timer.setRepeats(false);
-        timer.start();
+        return timer;
     }
 
     public void prikazPodataka() throws Exception {
@@ -563,5 +586,103 @@ public class PrikazSifri extends JFrame {
                 broj.substring(broj.length() - 4);
 
         return "•••• •••• •••• " + zadnjeCetiri;
+    }
+
+    private void prikaziKarticu(Card card) {
+        JTextField txtNaziv = new JTextField(card.getName());
+        JTextField txtVlasnik = new JTextField(card.getCardholderName());
+        JTextField txtBroj = new JTextField(card.getCardNumber());
+        JTextField txtIsteka = new JTextField(card.getExpiryDate());
+        JPasswordField txtCvv = new JPasswordField(card.getCvv());
+        JTextField txtKategorija = new JTextField(card.getCategory());
+
+        txtNaziv.setEditable(false);
+        txtVlasnik.setEditable(false);
+        txtBroj.setEditable(false);
+        txtIsteka.setEditable(false);
+        txtCvv.setEditable(false);
+        txtKategorija.setEditable(false);
+
+        JButton btnKopirajBroj = new JButton("Kopiraj broj kartice");
+        JButton btnKopirajCvv = new JButton("Kopiraj CVV");
+        JCheckBox chkPrikaziCvv = new JCheckBox("Prikaži CVV");
+
+        btnKopirajBroj.addActionListener(e ->
+                kopirajOsjetljiviTekst(card.getCardNumber(), "Broj kartice je kopiran."));
+
+        btnKopirajCvv.addActionListener(e ->
+                kopirajOsjetljiviTekst(card.getCvv(), "CVV je kopiran."));
+
+        chkPrikaziCvv.addActionListener(e -> {
+
+            if (chkPrikaziCvv.isSelected()) {
+                txtCvv.setEchoChar((char) 0);
+            } else {
+                txtCvv.setEchoChar('•');
+            }
+        });
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+
+        panel.add(new JLabel("Naziv:"));
+        panel.add(txtNaziv);
+
+        panel.add(new JLabel("Vlasnik:"));
+        panel.add(txtVlasnik);
+
+        panel.add(new JLabel("Broj kartice:"));
+        panel.add(txtBroj);
+
+        panel.add(new JLabel(""));
+        panel.add(btnKopirajBroj);
+
+        panel.add(new JLabel("Datum isteka:"));
+        panel.add(txtIsteka);
+
+        panel.add(new JLabel("CVV:"));
+        panel.add(txtCvv);
+
+        panel.add(new JLabel(""));
+        panel.add(chkPrikaziCvv);
+
+        panel.add(new JLabel(""));
+        panel.add(btnKopirajCvv);
+
+        panel.add(new JLabel("Kategorija:"));
+        panel.add(txtKategorija);
+
+        JOptionPane.showMessageDialog(this, panel, "Kartica - " + card.getName(), JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void prikaziBiljesku(SecureNote note) {
+        JTextArea txtSadrzaj = new JTextArea(note.getContent());
+
+        txtSadrzaj.setEditable(false);
+        txtSadrzaj.setLineWrap(true);
+        txtSadrzaj.setWrapStyleWord(true);
+        txtSadrzaj.setRows(12);
+        txtSadrzaj.setColumns(40);
+
+        JScrollPane scrollPane = new JScrollPane(txtSadrzaj);
+
+        JButton btnKopiraj = new JButton("Kopiraj sadržaj");
+
+        btnKopiraj.addActionListener(e ->
+                kopirajOsjetljiviTekst(note.getContent(), "Sadržaj bilješke je kopiran."));
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JLabel lblNaziv = new JLabel(note.getName());
+        lblNaziv.setFont(new Font("SansSerif", Font.BOLD, 18));
+        panel.add(lblNaziv);
+        panel.add(Box.createVerticalStrut(10));
+
+        panel.add(new JLabel("Kategorija: " + note.getCategory()));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(scrollPane);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(btnKopiraj);
+
+        JOptionPane.showMessageDialog(this, panel, "Sigurna bilješka", JOptionPane.PLAIN_MESSAGE);
     }
 }
