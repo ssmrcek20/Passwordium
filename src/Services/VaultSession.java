@@ -3,7 +3,6 @@ package Services;
 import java.util.Arrays;
 
 public class VaultSession {
-
     private static byte[] vaultKey;
     private static String jwt;
 
@@ -32,10 +31,6 @@ public class VaultSession {
         }
 
         return jwt;
-    }
-
-    public static boolean isUnlocked() {
-        return vaultKey != null;
     }
 
     public static void lock() {

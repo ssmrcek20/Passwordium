@@ -12,6 +12,15 @@ public class Account extends VaultItem {
     @SerializedName(value = "link", alternate = {"Link"})
     private String link;
 
+    private String totpSecret;
+
+    public String getTotpSecret() {
+        return totpSecret;
+    }
+    public void setTotpSecret(String totpSecret) {
+        this.totpSecret = totpSecret;
+    }
+
     public Account() {
         super();
         setType("CREDENTIAL");

@@ -2,10 +2,7 @@ package Views;
 
 import Objects.Account;
 import Objects.EncryptedVaultKey;
-import Services.AccountService;
-import Services.AutoLockService;
-import Services.VaultCryptoService;
-import Services.VaultSession;
+import Services.*;
 import com.google.gson.Gson;
 
 import javax.swing.*;
@@ -24,6 +21,7 @@ public class UrediRacun extends JFrame {
     private JButton btnUredi;
     private JPanel panUredi;
     private JLabel lblNatrag;
+    private JTextField txtTotpSecret;
     private Account account;
 
     public UrediRacun(){
@@ -76,6 +74,7 @@ public class UrediRacun extends JFrame {
                 txtLozinka.setBackground(Color.white);
             }
 
+
             if (!ispravno) {
                 return;
             }
@@ -88,6 +87,14 @@ public class UrediRacun extends JFrame {
                 account.setUsername(txtKorIme.getText());
                 account.setPassword(new String(passwordChars));
                 account.setLink(txtLink.getText());
+                String totpSecret = txtTotpSecret.getText().trim();
+
+                if (!totpSecret.isBlank() && !TotpService.isValidSecret(totpSecret)) {
+                    JOptionPane.showMessageDialog(this, "TOTP ključ nije ispravan.");
+                    return;
+                }
+
+                account.setTotpSecret(totpSecret.isBlank() ? null : totpSecret);
 
                 Gson gson = new Gson();
                 String json = gson.toJson(account);
@@ -137,6 +144,9 @@ public class UrediRacun extends JFrame {
         txtKorIme.setText(account.getUsername());
         txtLink.setText(account.getLink());
         txtLozinka.setText(account.getPassword());
+        if (account.getTotpSecret() != null) {
+            txtTotpSecret.setText(account.getTotpSecret());
+        }
     }
 
     public void podaci(Account account) {

@@ -24,7 +24,7 @@ public class DodajLozinke extends JFrame {
     private JLabel lblNatrag;
     private JComboBox<String> cmbKategorija;
     private JButton btnNovaKategorija;
-
+    private JTextField txtTotpSecret;
     public DodajLozinke() {
 
         setTitle("Passwordium");
@@ -102,6 +102,17 @@ public class DodajLozinke extends JFrame {
             try {
 
                 Account account = new Account(txtNaziv.getText(), txtKorIme.getText(), new String(passwordChars), txtLink.getText(), (String) cmbKategorija.getSelectedItem());
+
+                String totpSecret = txtTotpSecret.getText().trim();
+
+                if (!totpSecret.isBlank()) {
+                    if (!TotpService.isValidSecret(totpSecret)) {
+                        JOptionPane.showMessageDialog(this, "TOTP ključ nije ispravan Base32 ključ.");
+                        return;
+                    }
+
+                    account.setTotpSecret(totpSecret);
+                }
 
                 Gson gson = new Gson();
                 String json = gson.toJson(account);

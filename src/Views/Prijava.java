@@ -14,7 +14,6 @@ public class Prijava extends JFrame {
     private JButton btnPrijava;
     private JButton btnRegistracija;
     private JPasswordField txtLozinka;
-    private JPasswordField txtTOTP;
 
     public Prijava() {
         setTitle("Passwordium");

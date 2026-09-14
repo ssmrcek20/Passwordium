@@ -17,7 +17,6 @@
           <text value="Moje vjerodajnice"/>
         </properties>
       </component>
-
       <component id="pretraga" class="javax.swing.JTextField" binding="txtPretraga">
         <constraints>
           <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -29,7 +28,6 @@
           <toolTipText value="Pretraži vjerodajnice"/>
         </properties>
       </component>
-
       <component id="logout" class="javax.swing.JButton" binding="btnLogout">
         <constraints>
           <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -41,7 +39,6 @@
           <text value="Odjava"/>
         </properties>
       </component>
-
       <component id="kategorijeNaslov" class="javax.swing.JLabel" binding="lblKategorije">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -51,7 +48,6 @@
           <text value="Kategorije"/>
         </properties>
       </component>
-
       <component id="uputa" class="javax.swing.JLabel" binding="lblUputa">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -61,7 +57,6 @@
           <text value="Odaberite red da biste kopirali lozinku za željeni račun!"/>
         </properties>
       </component>
-
       <component id="brojZapisa" class="javax.swing.JLabel" binding="lblBrojZapisa">
         <constraints>
           <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
@@ -71,7 +66,6 @@
           <text value="0 zapisa"/>
         </properties>
       </component>
-
       <scrollpane id="kategorijeScroll">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
@@ -91,7 +85,6 @@
           </component>
         </children>
       </scrollpane>
-
       <scrollpane id="8380e" binding="scrollPan">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -112,7 +105,6 @@
           </component>
         </children>
       </scrollpane>
-
       <vspacer id="90ed5">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="5" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
@@ -120,7 +112,6 @@
           </grid>
         </constraints>
       </vspacer>
-
       <component id="promjeniKategoriju" class="javax.swing.JButton" binding="btnPromjeniKategoriju">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -132,7 +123,6 @@
           <text value="Promijeni kategoriju"/>
         </properties>
       </component>
-
       <component id="izbrisi" class="javax.swing.JButton" binding="btnUkloniLozinku">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -144,13 +134,11 @@
           <text value="Izbriši"/>
         </properties>
       </component>
-
       <hspacer id="akcijeSpacer">
         <constraints>
           <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-
       <component id="uredi" class="javax.swing.JButton" binding="btnUrediLozinku">
         <constraints>
           <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -162,7 +150,6 @@
           <text value="Uredi"/>
         </properties>
       </component>
-
       <component id="dodaj" class="javax.swing.JButton" binding="btnDodajLozinku">
         <constraints>
           <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
@@ -174,24 +161,37 @@
           <text value="Dodaj"/>
         </properties>
       </component>
-
-      <component id="twofa" class="javax.swing.JButton" binding="btn2FAPostavke">
+      <component id="a4c7f" class="javax.swing.JButton" binding="btnUvoz">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <maximum-size width="180" height="40"/>
           </grid>
         </constraints>
         <properties>
           <font size="16"/>
-          <text value="2FA postavke"/>
+          <text value="Uvoz vjerodajnica"/>
         </properties>
       </component>
-
-      <hspacer id="bottomSpacer">
+      <component id="878ca" class="javax.swing.JButton" binding="btnIzvoz">
         <constraints>
-          <grid row="5" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <maximum-size width="180" height="40"/>
+          </grid>
         </constraints>
-      </hspacer>
+        <properties>
+          <font size="16"/>
+          <text value="Izvoz vjerodajnica"/>
+        </properties>
+      </component>
+      <component id="93217" class="javax.swing.JButton" binding="btnTotp">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="16"/>
+          <text value="Kopiraj TOTP"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

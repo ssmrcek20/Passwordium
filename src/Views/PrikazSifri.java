@@ -33,15 +33,17 @@ public class PrikazSifri extends JFrame {
     private JButton btnUrediLozinku;
     private JButton btnUkloniLozinku;
     private JScrollPane scrollPan;
-    private JButton btn2FAPostavke;
     private JButton btnLogout;
     private JButton btnPromjeniKategoriju;
+    private JButton btnUvoz;
+    private JButton btnIzvoz;
     private JTextField txtPretraga;
     private JList<String> listKategorije;
     private JLabel lblNaslov;
     private JLabel lblBrojZapisa;
     private JLabel lblKategorije;
     private JLabel lblUputa;
+    private JButton btnTotp;
 
     private final List<VaultItem> items = new ArrayList<>();
     private final List<VaultItem> shownItems = new ArrayList<>();
@@ -92,9 +94,11 @@ public class PrikazSifri extends JFrame {
         stilizirajGumb(btnDodajLozinku);
         stilizirajGumb(btnUrediLozinku);
         stilizirajGumb(btnUkloniLozinku);
-        stilizirajGumb(btn2FAPostavke);
         stilizirajGumb(btnLogout);
         stilizirajGumb(btnPromjeniKategoriju);
+        stilizirajGumb(btnUvoz);
+        stilizirajGumb(btnIzvoz);
+        stilizirajGumb(btnTotp);
     }
 
     private void stilizirajGumb(JButton button) {
@@ -119,6 +123,125 @@ public class PrikazSifri extends JFrame {
 
     private void postaviListenere() {
 
+        btnTotp.addActionListener(e -> {
+            int row = tabLozinke.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Odaberite vjerodajnicu.");
+                return;
+            }
+
+            VaultItem item = shownItems.get(row);
+
+            if (!(item instanceof Account account)) {
+                JOptionPane.showMessageDialog(this, "TOTP je dostupan samo za vjerodajnice.");
+                return;
+            }
+
+            if (account.getTotpSecret() == null || account.getTotpSecret().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Za ovu vjerodajnicu nije spremljen TOTP ključ.");
+                return;
+            }
+
+            prikaziTotp(account);
+        });
+
+        btnIzvoz.addActionListener(e -> {
+            if (items.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Trezor nema zapisa za izvoz.");
+
+                return;
+            }
+
+            int potvrda = JOptionPane.showConfirmDialog(this, """
+                          Izvozna JSON datoteka sadržavat će osjetljive
+                          podatke u čitljivom obliku:
+      
+                          • korisnička imena
+                          • lozinke
+                          • podatke kartica
+                          • CVV
+                          • sigurne bilješke
+      
+                          Datoteku čuvajte na sigurnom mjestu.
+      
+                          Želite li nastaviti?
+                          """, "Sigurnosno upozorenje", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            if (potvrda != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            try {
+                VaultImportExportService service = new VaultImportExportService();
+
+                int broj = service.exportVault(this, items);
+
+                if (broj == 0) {
+                    return;
+                }
+
+                JOptionPane.showMessageDialog(this, "Izvoz je uspješno završen.\n" +
+                        "Izvezeno zapisa: " + broj, "Izvoz", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+
+                JOptionPane.showMessageDialog(this, "Došlo je do greške tijekom izvoza:\n" +
+                        ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        btnUvoz.addActionListener(e -> {
+            try {
+                VaultImportExportService service = new VaultImportExportService();
+                List<VaultItem> importedItems = service.readVault(this);
+
+                if (importedItems.isEmpty()) {
+                    return;
+                }
+
+                int credentials = 0;
+                int cards = 0;
+                int notes = 0;
+
+                for (VaultItem item : importedItems) {
+                    if (item instanceof Account) {
+                        credentials++;
+                    }
+                    else if (item instanceof Card) {
+                        cards++;
+                    }
+                    else if (item instanceof SecureNote) {
+                        notes++;
+                    }
+                }
+
+                String poruka = "Pronađeno je " + importedItems.size() + " zapisa:\n\n" + "Vjerodajnice: " +
+                        credentials + "\nKartice: " + cards + "\nSigurne bilješke: " + notes + "\n\nŽelite li ih uvesti?";
+
+                int potvrda = JOptionPane.showConfirmDialog(this, poruka, "Uvoz podataka",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                if (potvrda != JOptionPane.YES_OPTION) {
+                    return;
+                }
+
+                int spremljeno = service.saveImportedItems(importedItems);
+
+                prikazPodataka();
+
+                JOptionPane.showMessageDialog(this, "Uvoz je uspješno završen.\n" +
+                        "Uvezeno zapisa: " + spremljeno, "Uvoz", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+
+                JOptionPane.showMessageDialog(this, "Došlo je do greške tijekom uvoza:\n"
+                        + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         btnLogout.addActionListener(e -> {
             try {
                 new UserService().logout();
@@ -130,11 +253,6 @@ public class PrikazSifri extends JFrame {
                 new Prijava();
                 dispose();
             }
-        });
-
-        btn2FAPostavke.addActionListener(e -> {
-            new TwoFAPostavke();
-            dispose();
         });
 
         btnDodajLozinku.addActionListener(e -> {
@@ -684,5 +802,65 @@ public class PrikazSifri extends JFrame {
         panel.add(btnKopiraj);
 
         JOptionPane.showMessageDialog(this, panel, "Sigurna bilješka", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void prikaziTotp(Account account) {
+        if (account.getTotpSecret() == null || account.getTotpSecret().isBlank()) {
+            JOptionPane.showMessageDialog(this, "Za ovu vjerodajnicu nije spremljen TOTP ključ.");
+            return;
+        }
+
+        JLabel lblKod = new JLabel();
+        JLabel lblVrijeme = new JLabel();
+        JButton btnKopiraj = new JButton("Kopiraj kod");
+        lblKod.setFont(new Font("Monospaced", Font.BOLD, 30));
+        lblKod.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        lblKod.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblVrijeme.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnKopiraj.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(lblKod);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(lblVrijeme);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(btnKopiraj);
+
+        Timer timer = new Timer(500, e -> {
+            try {
+                String code =
+                        TotpService.generateCode(account.getTotpSecret());
+                                lblKod.setText(code.substring(0, 3) + " " + code.substring(3));
+                                lblVrijeme.setText("Novi kod za " + TotpService.getRemainingSeconds() + " s");
+                            } catch (Exception ex) {
+                                lblKod.setText("Greška");
+                                lblVrijeme.setText("");
+                            }
+                        }
+                );
+
+        try {
+            String code = TotpService.generateCode(account.getTotpSecret());
+            lblKod.setText(code.substring(0, 3) + " " + code.substring(3));
+            lblVrijeme.setText("Novi kod za " + TotpService.getRemainingSeconds() + " s");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "TOTP kod nije moguće generirati.", "Greška", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        timer.start();
+        btnKopiraj.addActionListener(e -> {
+            try {
+                String code = TotpService.generateCode(account.getTotpSecret());
+                kopirajOsjetljiviTekst(code, "TOTP kod je kopiran.");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "TOTP kod nije moguće kopirati.");
+            }
+        });
+
+        JOptionPane.showMessageDialog(this, panel, "TOTP - " + account.getName(), JOptionPane.PLAIN_MESSAGE);
+        timer.stop();
     }
 }
