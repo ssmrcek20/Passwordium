@@ -1,7 +1,14 @@
 import Views.Prijava;
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        new Prijava();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {
+            }
+            new Prijava();
+        });
     }
 }
