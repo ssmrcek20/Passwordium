@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.AWTEventListener;
 
 public class AutoLockService {
-    private static final int TIMEOUT_MINUTES = 5;
+    private static final int TIMEOUT_MINUTES = 1;
     private static final long TIMEOUT_MS =
             TIMEOUT_MINUTES * 60 * 1000L;
     private static Timer timer;

@@ -25,6 +25,7 @@ public class DodajLozinke extends JFrame {
     private JComboBox<String> cmbKategorija;
     private JButton btnNovaKategorija;
     private JTextField txtTotpSecret;
+    private static final int MIN_PASSWORD_SCORE = 4;
     public DodajLozinke() {
 
         setTitle("Passwordium");
@@ -98,6 +99,15 @@ public class DodajLozinke extends JFrame {
 
             char[] passwordChars =
                     txtLozinka.getPassword();
+
+            PasswordStrengthService.Result result = PasswordStrengthService.evaluate(passwordChars, txtKorIme.getText().trim());
+
+            if (result.getScore() < MIN_PASSWORD_SCORE) {
+
+                JOptionPane.showMessageDialog(this, "Upisana lozinka nije dovoljno jaka.\n\n" +
+                        result.getMessage(), "Preslaba lozinka", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             try {
 
